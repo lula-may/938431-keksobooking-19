@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Юлия Елагина](https://up.htmlacademy.ru/javascript/19/user/938431).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Бабченко](https://up.htmlacademy.ru/javascript/19/user/619357).
 
 ---
 
