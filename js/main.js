@@ -22,32 +22,39 @@ var getRandomNumberFrom = function (minValue, maxValue) {
   return number;
 };
 
-// Получение случайного индекса массива
-var getRandomElement = function (array) {
-  var index = Math.round(Math.random() * (array.length - 1));
-  return array[index];
+// Получение случайного элемента массива
+var getRandomElement = function (arr) {
+  var index = Math.round(Math.random() * (arr.length - 1));
+  return arr[index];
 };
 
 // Построение массива случайной длины из элементов массива с фотографиями
 var getRandomLengthPhotoList = function () {
   var length = getRandomNumberFrom(1, MAX_PHOTOS);
-  var array = [];
+  var randomPhotos = [];
   for (var i = 0; i < length; i++) {
-    array[i] = PHOTOS[getRandomElement(PHOTOS)];
+    randomPhotos[i] = getRandomElement(PHOTOS);
   }
-  return array;
+  return randomPhotos;
 };
 
 // Получение выборки случайной длины из неповтояющихся элементов массива
 var getSubList = function (arr) {
-  var subListLength = getRandomNumberFrom(1, arr.length);
-  var subList = [];
-  for (var i = 0; i < subListLength; i++) {
-    var randomIndex = getRandomNumberFrom(0, arr.lenght - 1);
-    subList[i] = arr[randomIndex];
-    arr.splice(randomIndex, 1);
+  var subListElements = arr.slice();
+  // Получаем количество элементов, которые надо удалить
+  var elementsToDelete = getRandomNumberFrom(0, arr.length);
+
+  // Если надо удалить все элементы - возвращаем пустой массив
+  if (elementsToDelete === arr.length) {
+    subListElements = [];
+  } else if (elementsToDelete !== 0) {
+    // Если количесво удаляемых элементов не равно нулю, удаляем случайные элементы массива
+    for (var count = 0; count < elementsToDelete; count++) {
+      var randomIndex = getRandomNumberFrom(0, subListElements.length - 1);
+      subListElements.splice(randomIndex, 1);
+    }
   }
-  return subList;
+  return subListElements;
 };
 
 // Генерирование случайного объекта для объявления
@@ -107,7 +114,6 @@ var createPinFragment = function (arr, template) {
 };
 
 var advertisements = createMockList();
-
 var map = document.querySelector('.map');
 map.classList.remove('map--faded');
 
