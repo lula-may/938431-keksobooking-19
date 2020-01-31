@@ -41,18 +41,17 @@ var getRandomLengthPhotoList = function () {
 // Получение выборки случайной длины из неповтояющихся элементов массива
 var getSubList = function (arr) {
   var subListElements = arr.slice();
+
   // Получаем количество элементов, которые надо удалить
   var elementsToDelete = getRandomNumberFrom(0, arr.length);
 
   // Если надо удалить все элементы - возвращаем пустой массив
   if (elementsToDelete === arr.length) {
-    subListElements = [];
-  } else if (elementsToDelete !== 0) {
-    // Если количесво удаляемых элементов не равно нулю, удаляем случайные элементы массива
-    for (var count = 0; count < elementsToDelete; count++) {
-      var randomIndex = getRandomNumberFrom(0, subListElements.length - 1);
-      subListElements.splice(randomIndex, 1);
-    }
+    return [];
+  }
+  for (var count = 0; count < elementsToDelete; count++) {
+    var randomIndex = getRandomNumberFrom(0, subListElements.length - 1);
+    subListElements.splice(randomIndex, 1);
   }
   return subListElements;
 };
@@ -108,6 +107,7 @@ var createPinFragment = function (arr, template) {
     pinElement.style = 'left: ' + (advertisement.location.x - PIN_GAP_X) + 'px; top: ' + (advertisement.location.y - PIN_GAP_Y) + 'px;';
     var picture = pinElement.querySelector('img');
     picture.src = advertisement.author.avatar;
+    picture.alt = advertisement.offer.title;
     fragment.appendChild(pinElement);
   }
   return fragment;
