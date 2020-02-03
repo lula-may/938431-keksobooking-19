@@ -160,34 +160,30 @@ var getGuestsText = function (num) {
   return (num % TEN === 1) ? num + ' гостя' : num + ' гостей';
 };
 
-var containsElementIn = function (el, arr) {
-  for (var j = 0; j < arr.length; j++) {
-    el.textContent = arr[j];
-    if (el.classList.contains('popup__feature--' + arr[j])) {
-      return true;
-    }
+var fillFeatureList = function (list, availableFeatures) {
+  // Создаем фрагмент из доступных удобств
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < availableFeatures.length; i++) {
+    var listElement = list.querySelector('.popup__feature--' + availableFeatures[i]);
+    var newItem = listElement.cloneNode(true);
+    newItem.textContent = availableFeatures[i];
+    fragment.appendChild(newItem);
   }
-  return false;
-};
-
-var fillFeatureList = function (list, arr) {
-  // Получаем список возможных удобств
+  // Удаляем из разметки первоначальный список всех возможных удобств
   var listElements = list.querySelectorAll('.popup__feature');
-
-  for (var i = 0; i < listElements.length; i++) {
-  // Если элемента нет среди доступных удобств, удаляем его из DOM
-    if (!containsElementIn(listElements[i], arr)) {
-      list.removeChild(listElements[i]);
-    }
+  for (var j = 0; j < listElements.length; j++) {
+    listElements[j].remove();
   }
+  // Вставляем собранный фрагмент в разметку
+  list.appendChild(fragment);
 };
 
-var fillPhotoList = function (list, arr) {
+var fillPhotoList = function (list, photoSources) {
   var element = list.querySelector('.popup__photo');
-  element.src = arr[0];
-  for (var i = 1; i < arr.length; i++) {
+  element.src = photoSources[0];
+  for (var i = 1; i < photoSources.length; i++) {
     var newElement = element.cloneNode(true);
-    newElement.src = arr[i];
+    newElement.src = photoSources[i];
     list.appendChild(newElement);
   }
 };
