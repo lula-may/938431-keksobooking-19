@@ -1,15 +1,20 @@
 'use strict';
-
+var TEN = 10;
+var TWENTY = 20;
 var ADVERTISEMENT_QUANTITY = 8;
-var MIN_PRICE = 10;
-var MAX_PRICE = 200;
+var MIN_PRICE = 0;
+var MAX_PRICE = 1000000;
 var MAX_ROOMS = 10;
-var MAX_GUESTS = 10;
+var MAX_GUESTS = 30;
 var MAX_PHOTOS = 8;
 var MAP_TOP = 130;
 var MAP_BOTTOM = 630;
 var PIN_GAP_X = 20;
 var PIN_GAP_Y = 40;
+var PALACE = 'Дворец';
+var FLAT = 'Квартира';
+var HOUSE = 'Дом';
+var BUNGALO = 'Бунгало';
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var CHECK_HOURS = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
@@ -72,7 +77,7 @@ var createMockAdvertisement = function (j) {
   var offer = {
     title: 'Заголовок предложения',
     address: location.x + ', ' + location.y,
-    price: getRandomNumberFrom(MIN_PRICE, MAX_PRICE) * 100,
+    price: getRandomNumberFrom(MIN_PRICE, MAX_PRICE),
     type: getRandomElement(TYPES),
     rooms: getRandomNumberFrom(1, MAX_ROOMS),
     guests: getRandomNumberFrom(1, MAX_GUESTS),
@@ -127,27 +132,33 @@ pinListElement.appendChild(createPinFragment(advertisements, mapPinTemplate));
 var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
 var getTypeInRussian = function (type) {
-  if (type === 'flat') {
-    return 'Квартира';
-  } else if (type === 'bungalo') {
-    return 'Бунгало';
-  } else if (type === 'house') {
-    return 'Дом';
-  } else if (type === 'palace') {
-    return 'Дворец';
+  switch (type) {
+    case 'palace': return PALACE;
+    case 'bungalo': return BUNGALO;
+    case 'house': return HOUSE;
+    default: return FLAT;
   }
-  return '';
 };
 
 var getRoomsText = function (num) {
-  if (num % 20 === 1) {
-    return ' комната для ';
-  } else if (num % 20 < 5) {
-    return ' комнаты для ';
+  if (num >= TEN && num <= TWENTY) {
+    return num + ' комнат для ';
   }
-  return ' комнат для ';
+  switch (num % TEN) {
+    case 1: return num + ' комната для ';
+    case 2: return num + ' комнаты для ';
+    case 3: return num + ' комнаты для ';
+    case 4: return num + ' комнаты для ';
+    default: return num + ' комнат для ';
+  }
 };
 
+var getGuestsText = function (num) {
+  if (num >= TEN && num <= TWENTY) {
+    return num + ' гостей';
+  }
+  return (num % TEN === 1) ? num + ' гостя' : num + ' гостей';
+};
 
 var containsElementIn = function (el, arr) {
   for (var j = 0; j < arr.length; j++) {
@@ -181,20 +192,20 @@ var fillPhotoList = function (list, arr) {
   }
 };
 
-var fillAdvertisementCard = function (obj) {
+var fillAdvertisementCard = function (advertisement) {
   var card = cardTemplate.cloneNode(true);
-  card.querySelector('.popup__title').textContent = obj.offer.title;
-  card.querySelector('.popup__text--address').textContent = obj.offer.address;
-  card.querySelector('.popup__text--price').textContent = obj.offer.price + '₽/ночь';
-  card.querySelector('.popup__type').textContent = getTypeInRussian(obj.offer.type);
-  card.querySelector('.popup__text--capacity').textContent = obj.offer.rooms + getRoomsText(obj.offer.rooms) + obj.offer.guests + ' гостей';
-  card.querySelector('.popup__text--time').textContent = 'Заезд после ' + obj.offer.checkin + ', выезд до ' + obj.offer.checkout;
+  card.querySelector('.popup__title').textContent = advertisement.offer.title;
+  card.querySelector('.popup__text--address').textContent = advertisement.offer.address;
+  card.querySelector('.popup__text--price').textContent = advertisement.offer.price + '₽/ночь';
+  card.querySelector('.popup__type').textContent = getTypeInRussian(advertisement.offer.type);
+  card.querySelector('.popup__text--capacity').textContent = getRoomsText(advertisement.offer.rooms) + getGuestsText(advertisement.offer.guests);
+  card.querySelector('.popup__text--time').textContent = 'Заезд после ' + advertisement.offer.checkin + ', выезд до ' + advertisement.offer.checkout;
   var featureList = card.querySelector('.popup__features');
-  fillFeatureList(featureList, obj.offer.features);
-  card.querySelector('.popup__description').textContent = obj.offer.description;
+  fillFeatureList(featureList, advertisement.offer.features);
+  card.querySelector('.popup__description').textContent = advertisement.offer.description;
   var photoList = card.querySelector('.popup__photos');
-  fillPhotoList(photoList, obj.offer.photos);
-  card.querySelector('.popup__avatar').src = obj.author.avatar;
+  fillPhotoList(photoList, advertisement.offer.photos);
+  card.querySelector('.popup__avatar').src = advertisement.author.avatar;
   return card;
 };
 
