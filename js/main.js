@@ -1,6 +1,4 @@
 'use strict';
-var TEN = 10;
-var TWENTY = 20;
 var ADVERTISEMENT_QUANTITY = 8;
 var MIN_PRICE = 0;
 var MAX_PRICE = 1000000;
@@ -11,16 +9,18 @@ var MAP_TOP = 130;
 var MAP_BOTTOM = 630;
 var PIN_GAP_X = 20;
 var PIN_GAP_Y = 40;
-var PALACE = 'Дворец';
-var FLAT = 'Квартира';
-var HOUSE = 'Дом';
-var BUNGALO = 'Бунгало';
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var CHECK_HOURS = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
+var housing = {
+  palace: 'Дворец',
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 
 // Получение случайного числа из заданного диапазона
 var getRandomNumberFrom = function (minValue, maxValue) {
@@ -132,32 +132,21 @@ pinListElement.appendChild(createPinFragment(advertisements, mapPinTemplate));
 var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
 var getTypeInRussian = function (type) {
-  switch (type) {
-    case 'palace': return PALACE;
-    case 'bungalo': return BUNGALO;
-    case 'house': return HOUSE;
-    default: return FLAT;
-  }
+  return housing[type];
 };
 
 var getRoomsText = function (num) {
-  if (num >= TEN && num <= TWENTY) {
+  if (num > 10 && num < 15 || num % 10 > 4) {
     return num + ' комнат для ';
   }
-  switch (num % TEN) {
+  switch (num % 10) {
     case 1: return num + ' комната для ';
-    case 2: return num + ' комнаты для ';
-    case 3: return num + ' комнаты для ';
-    case 4: return num + ' комнаты для ';
-    default: return num + ' комнат для ';
+    default: return num + ' комнаты для ';
   }
 };
 
 var getGuestsText = function (num) {
-  if (num >= TEN && num <= TWENTY) {
-    return num + ' гостей';
-  }
-  return (num % TEN === 1) ? num + ' гостя' : num + ' гостей';
+  return (num % 10 === 1 && num !== 11) ? num + ' гостя' : num + ' гостей';
 };
 
 var fillFeatureList = function (list, availableFeatures) {
@@ -170,11 +159,8 @@ var fillFeatureList = function (list, availableFeatures) {
     fragment.appendChild(newItem);
   }
   // Удаляем из разметки первоначальный список всех возможных удобств
-  var listElements = list.querySelectorAll('.popup__feature');
-  for (var j = 0; j < listElements.length; j++) {
-    listElements[j].remove();
-  }
   // Вставляем собранный фрагмент в разметку
+  list.innerHTML = '';
   list.appendChild(fragment);
 };
 
