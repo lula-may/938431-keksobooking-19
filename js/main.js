@@ -1,5 +1,6 @@
 'use strict';
 var ENTER_KEY = 'Enter';
+var ESC_KEY = 'Escape';
 var LEFT_MOUSE_KEY = 0;
 var ADVERTISEMENT_QUANTITY = 8;
 var MIN_PRICE = 0;
@@ -109,6 +110,52 @@ var createMockList = function () {
   return elementList;
 };
 
+var currentCard;
+
+// Обработчики для кнопки закрытия карточки объявления
+var closeButtonClickHandler = function () {
+  currentCard.remove();
+  document.removeEventListener('keydown', cardPressESCHandler);
+};
+
+var closeButtonPressEnterHandler = function (evt) {
+  if (evt.key === ENTER_KEY) {
+    currentCard.remove();
+    document.removeEventListener('keydown', cardPressESCHandler);
+  }
+};
+
+var cardPressESCHandler = function (evt) {
+  if (evt.key === ESC_KEY) {
+    currentCard.remove();
+    document.removeEventListener('keydown', cardPressESCHandler);
+  }
+};
+
+var openPinCard = function (pin) {
+  if (currentCard) {
+    currentCard.remove();
+  }
+  var newCard = pin.card;
+  var closeButton = newCard.querySelector('.popup__close');
+  closeButton.addEventListener('click', closeButtonClickHandler);
+  closeButton.addEventListener('keydown', closeButtonPressEnterHandler);
+  document.addEventListener('keydown', cardPressESCHandler);
+  var filtersContainer = map.querySelector('.map__filters-container');
+  map.insertBefore(newCard, filtersContainer);
+  currentCard = newCard;
+};
+
+// Обработчики воздействия на метку объявления
+var mapPinClickHandler = function (evt) {
+  openPinCard(evt.currentTarget);
+};
+
+var mapPinPressEnterHandler = function (evt) {
+  if (evt.key === ENTER_KEY) {
+    openPinCard(evt.currentTarget);
+  }
+};
 // Создание и сборка фрагмента из меток на основе шаблона
 var createPinFragment = function (arr, template) {
   var fragment = document.createDocumentFragment();
@@ -119,6 +166,9 @@ var createPinFragment = function (arr, template) {
     var picture = pinElement.querySelector('img');
     picture.src = advertisement.author.avatar;
     picture.alt = advertisement.offer.title;
+    pinElement.card = fillAdvertisementCard(advertisement);
+    pinElement.addEventListener('click', mapPinClickHandler);
+    pinElement.addEventListener('keydown', mapPinPressEnterHandler);
     fragment.appendChild(pinElement);
   }
   return fragment;
@@ -221,18 +271,12 @@ var setAddressValue = function (sizeY) {
   addressInput.value = location.x + ', ' + location.y;
 };
 
+var advertisements = createMockList();
 // Показываем сгенерированные метки
 var showSimilarPins = function () {
-  var advertisements = createMockList();
   var pinListElement = document.querySelector('.map__pins');
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   pinListElement.appendChild(createPinFragment(advertisements, mapPinTemplate));
-
-  var newCard = fillAdvertisementCard(advertisements[0]);
-  var filtersContainer = map.querySelector('.map__filters-container');
-  map.insertBefore(newCard, filtersContainer);
-  // Временно, чтобы не мешалась
-  newCard.remove();
 };
 
 // Связываем значение поля "Количество комнат" с "Количеством мест"
