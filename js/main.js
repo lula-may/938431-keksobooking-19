@@ -4,8 +4,10 @@ var LEFT_MOUSE_KEY = 0;
 var ADVERTISEMENT_QUANTITY = 8;
 var MIN_PRICE = 0;
 var MAX_PRICE = 1000000;
-var MAX_ROOMS = 10;
-var MAX_GUESTS = 30;
+var MAX_ROOMS = 30;
+var MAX_GUESTS = 3;
+var TOO_MANY_ROOMS = '100';
+var NO_GUESTS = '0';
 var MAX_PHOTOS = 8;
 var MAP_TOP = 130;
 var MAP_BOTTOM = 630;
@@ -240,11 +242,11 @@ var setGuestSelectValidity = function () {
   var rooms = roomSelect.value;
   var capacity = capacitySelect.value;
 
-  if (rooms === '100' && capacity !== '0') {
+  if (rooms === TOO_MANY_ROOMS && capacity !== NO_GUESTS) {
     capacitySelect.setCustomValidity('Ваши комнаты - не для гостей. Выберите "Не для гостей".');
-  } else if (rooms !== '100' && capacity > rooms) {
+  } else if (rooms !== TOO_MANY_ROOMS && capacity > rooms) {
     capacitySelect.setCustomValidity('Гостей не должно быть больше чем комнат. Выберите другое значение.');
-  } else if (rooms !== '100' && capacity === '0') {
+  } else if (rooms !== TOO_MANY_ROOMS && capacity === NO_GUESTS) {
     capacitySelect.setCustomValidity('Выберите хотя бы одного гостя!');
   } else {
     capacitySelect.setCustomValidity('');
