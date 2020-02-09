@@ -252,6 +252,8 @@ var priceInput = adForm.querySelector('#price');
 var roomSelect = adForm.querySelector('#room_number');
 var capacitySelect = adForm.querySelector('#capacity');
 var addressInput = adForm.querySelector('#address');
+var timeinSelect = adForm.querySelector('#timein');
+var timeoutSelect = adForm.querySelector('#timeout');
 
 // Добавляем атрибут disabled элементам массива
 var disableElements = function (elements) {
@@ -322,9 +324,22 @@ var setGuestSelectValidity = function () {
   }
 };
 
+// Связываем время заезда и время выезда
+var setSameValue = function (select, value) {
+  select.value = value;
+};
+
 // Обработчики изменения значений полей формы
 var typeChangeHandler = function () {
   setPriceValidity();
+};
+
+var timeinSelectChangeHandler = function () {
+  setSameValue(timeoutSelect, timeinSelect.value);
+};
+
+var timeoutSelectChangeHandler = function () {
+  setSameValue(timeinSelect, timeoutSelect.value);
 };
 
 var capacitySelectChangeHandler = function () {
@@ -341,6 +356,8 @@ var validateForm = function () {
   setGuestSelectValidity();
   setPriceValidity();
   typeSelect.addEventListener('change', typeChangeHandler);
+  timeinSelect.addEventListener('change', timeinSelectChangeHandler);
+  timeoutSelect.addEventListener('change', timeoutSelectChangeHandler);
   capacitySelect.addEventListener('change', capacitySelectChangeHandler);
   roomSelect.addEventListener('change', roomSelectChangeHandler);
 };
