@@ -206,40 +206,46 @@ var fillAdvertisementCard = function (advertisement) {
 };
 
 var currentCard;
+var activePin;
+
+var closePinCard = function (card) {
+  card.remove();
+  activePin = null;
+  document.removeEventListener('keydown', cardPressEscHandler);
+};
 
 // Обработчики для кнопки закрытия карточки объявления
 var closeButtonClickHandler = function () {
-  currentCard.remove();
-  document.removeEventListener('keydown', cardPressESCHandler);
+  closePinCard(currentCard);
 };
 
 var closeButtonPressEnterHandler = function (evt) {
   if (evt.key === ENTER_KEY) {
-    currentCard.remove();
-    document.removeEventListener('keydown', cardPressESCHandler);
+    closePinCard(currentCard);
   }
 };
 
-var cardPressESCHandler = function (evt) {
+var cardPressEscHandler = function (evt) {
   if (evt.key === ESC_KEY) {
-    currentCard.remove();
-    document.removeEventListener('keydown', cardPressESCHandler);
+    closePinCard(currentCard);
   }
 };
 
 var openPinCard = function (pin) {
-  if (currentCard) {
-    currentCard.remove();
-  }
-  var newCard = fillAdvertisementCard(advertisements[pin.i]);
-  var closeButton = newCard.querySelector('.popup__close');
-  var filtersContainer = map.querySelector('.map__filters-container');
+  if (pin !== activePin) {
+    if (currentCard) {
+      currentCard.remove();
+    }
+    currentCard = fillAdvertisementCard(advertisements[pin.i]);
+    var closeButton = currentCard.querySelector('.popup__close');
+    var filtersContainer = map.querySelector('.map__filters-container');
 
-  closeButton.addEventListener('click', closeButtonClickHandler);
-  closeButton.addEventListener('keydown', closeButtonPressEnterHandler);
-  document.addEventListener('keydown', cardPressESCHandler);
-  map.insertBefore(newCard, filtersContainer);
-  currentCard = newCard;
+    closeButton.addEventListener('click', closeButtonClickHandler);
+    closeButton.addEventListener('keydown', closeButtonPressEnterHandler);
+    document.addEventListener('keydown', cardPressEscHandler);
+    map.insertBefore(currentCard, filtersContainer);
+    activePin = pin;
+  }
 };
 
 // Здесь начинается блок активации страницы
@@ -368,14 +374,12 @@ var validateForm = function () {
 var mapPinMainMousedownHandler = function (evt) {
   if (evt.button === LEFT_MOUSE_KEY) {
     activatePage();
-    setAddressValue(PIN_ACTIVE_HEIGHT);
   }
 };
 
 var mapPinMainPressEnterHandler = function (evt) {
   if (evt.key === ENTER_KEY) {
     activatePage();
-    setAddressValue(PIN_ACTIVE_HEIGHT);
   }
 };
 
@@ -396,6 +400,7 @@ var activateForm = function () {
 var activatePage = function () {
   activateMap();
   activateForm();
+  setAddressValue(PIN_ACTIVE_HEIGHT);
   mapPinMain.removeEventListener('mousedown', mapPinMainMousedownHandler);
   mapPinMain.removeEventListener('keydown', mapPinMainPressEnterHandler);
   showSimilarPins();
