@@ -1,5 +1,6 @@
 'use strict';
 var ENTER_KEY = 'Enter';
+var ESC_KEY = 'Escape';
 var LEFT_MOUSE_KEY = 0;
 var ADVERTISEMENT_QUANTITY = 8;
 var MIN_PRICE = 0;
@@ -111,6 +112,17 @@ var createMockList = function () {
   return elementList;
 };
 
+
+// Обработчики воздействия на метку объявления
+var mapPinClickHandler = function (evt) {
+  openPinCard(evt.currentTarget);
+};
+
+var mapPinPressEnterHandler = function (evt) {
+  if (evt.key === ENTER_KEY) {
+    openPinCard(evt.currentTarget);
+  }
+};
 // Создание и сборка фрагмента из меток на основе шаблона
 var createPinFragment = function (arr, template) {
   var fragment = document.createDocumentFragment();
@@ -121,6 +133,10 @@ var createPinFragment = function (arr, template) {
     var picture = pinElement.querySelector('img');
     picture.src = advertisement.author.avatar;
     picture.alt = advertisement.offer.title;
+    pinElement.i = i;
+    // pinElement.card = ;
+    pinElement.addEventListener('click', mapPinClickHandler);
+    pinElement.addEventListener('keydown', mapPinPressEnterHandler);
     fragment.appendChild(pinElement);
   }
   return fragment;
@@ -189,6 +205,49 @@ var fillAdvertisementCard = function (advertisement) {
   return card;
 };
 
+var currentCard;
+var activePin;
+
+var closePinCard = function (card) {
+  card.remove();
+  activePin = null;
+  document.removeEventListener('keydown', cardPressEscHandler);
+};
+
+// Обработчики для кнопки закрытия карточки объявления
+var closeButtonClickHandler = function () {
+  closePinCard(currentCard);
+};
+
+var closeButtonPressEnterHandler = function (evt) {
+  if (evt.key === ENTER_KEY) {
+    closePinCard(currentCard);
+  }
+};
+
+var cardPressEscHandler = function (evt) {
+  if (evt.key === ESC_KEY) {
+    closePinCard(currentCard);
+  }
+};
+
+var openPinCard = function (pin) {
+  if (pin !== activePin) {
+    if (currentCard) {
+      currentCard.remove();
+    }
+    currentCard = fillAdvertisementCard(advertisements[pin.i]);
+    var closeButton = currentCard.querySelector('.popup__close');
+    var filtersContainer = map.querySelector('.map__filters-container');
+
+    closeButton.addEventListener('click', closeButtonClickHandler);
+    closeButton.addEventListener('keydown', closeButtonPressEnterHandler);
+    document.addEventListener('keydown', cardPressEscHandler);
+    map.insertBefore(currentCard, filtersContainer);
+    activePin = pin;
+  }
+};
+
 // Здесь начинается блок активации страницы
 
 var map = document.querySelector('.map');
@@ -196,9 +255,13 @@ var mapPinMain = map.querySelector('.map__pin--main');
 var filterSelects = map.querySelectorAll('select');
 var adForm = document.querySelector('.ad-form');
 var formFieldsets = adForm.querySelectorAll('fieldset');
+var typeSelect = adForm.querySelector('#type');
+var priceInput = adForm.querySelector('#price');
 var roomSelect = adForm.querySelector('#room_number');
 var capacitySelect = adForm.querySelector('#capacity');
 var addressInput = adForm.querySelector('#address');
+var timeinSelect = adForm.querySelector('#timein');
+var timeoutSelect = adForm.querySelector('#timeout');
 
 // Добавляем атрибут disabled элементам массива
 var disableElements = function (elements) {
@@ -223,18 +286,34 @@ var setAddressValue = function (sizeY) {
   addressInput.value = location.x + ', ' + location.y;
 };
 
+var advertisements = createMockList();
 // Показываем сгенерированные метки
 var showSimilarPins = function () {
-  var advertisements = createMockList();
   var pinListElement = document.querySelector('.map__pins');
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   pinListElement.appendChild(createPinFragment(advertisements, mapPinTemplate));
+};
 
-  var newCard = fillAdvertisementCard(advertisements[0]);
-  var filtersContainer = map.querySelector('.map__filters-container');
-  map.insertBefore(newCard, filtersContainer);
-  // Временно, чтобы не мешалась
-  newCard.remove();
+// Связываем значение поля "Тип жилья" с полем "Цена"
+var setPriceValidity = function () {
+  var type = typeSelect.value;
+  switch (type) {
+    case 'palace':
+      priceInput.setAttribute('min', '10000');
+      priceInput.setAttribute('placeholder', '10000');
+      break;
+    case 'flat':
+      priceInput.setAttribute('min', '1000');
+      priceInput.setAttribute('placeholder', '1000');
+      break;
+    case 'house':
+      priceInput.setAttribute('min', '5000');
+      priceInput.setAttribute('placeholder', '5000');
+      break;
+    default:
+      priceInput.setAttribute('min', '0');
+      priceInput.setAttribute('placeholder', '0');
+  }
 };
 
 // Связываем значение поля "Количество комнат" с "Количеством мест"
@@ -253,7 +332,24 @@ var setGuestSelectValidity = function () {
   }
 };
 
-// Обработчики изменения значений полей кол-ва комнат и кол-ва гостей
+// Связываем время заезда и время выезда
+var setSameValue = function (select, value) {
+  select.value = value;
+};
+
+// Обработчики изменения значений полей формы
+var typeChangeHandler = function () {
+  setPriceValidity();
+};
+
+var timeinSelectChangeHandler = function () {
+  setSameValue(timeoutSelect, timeinSelect.value);
+};
+
+var timeoutSelectChangeHandler = function () {
+  setSameValue(timeinSelect, timeoutSelect.value);
+};
+
 var capacitySelectChangeHandler = function () {
   setGuestSelectValidity();
 };
@@ -264,8 +360,12 @@ var roomSelectChangeHandler = function () {
 
 // Валидация формы
 var validateForm = function () {
-  // Проверка соответствия кол-ва комнат кол-ву гостей в начале
+  // Проверка полей в начале
   setGuestSelectValidity();
+  setPriceValidity();
+  typeSelect.addEventListener('change', typeChangeHandler);
+  timeinSelect.addEventListener('change', timeinSelectChangeHandler);
+  timeoutSelect.addEventListener('change', timeoutSelectChangeHandler);
   capacitySelect.addEventListener('change', capacitySelectChangeHandler);
   roomSelect.addEventListener('change', roomSelectChangeHandler);
 };
@@ -274,14 +374,12 @@ var validateForm = function () {
 var mapPinMainMousedownHandler = function (evt) {
   if (evt.button === LEFT_MOUSE_KEY) {
     activatePage();
-    setAddressValue(PIN_ACTIVE_HEIGHT);
   }
 };
 
 var mapPinMainPressEnterHandler = function (evt) {
   if (evt.key === ENTER_KEY) {
     activatePage();
-    setAddressValue(PIN_ACTIVE_HEIGHT);
   }
 };
 
@@ -302,6 +400,7 @@ var activateForm = function () {
 var activatePage = function () {
   activateMap();
   activateForm();
+  setAddressValue(PIN_ACTIVE_HEIGHT);
   mapPinMain.removeEventListener('mousedown', mapPinMainMousedownHandler);
   mapPinMain.removeEventListener('keydown', mapPinMainPressEnterHandler);
   showSimilarPins();
