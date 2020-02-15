@@ -4,6 +4,7 @@
   var TOO_MANY_ROOMS = '100';
   var NO_GUESTS = '0';
   var adForm = document.querySelector('.ad-form');
+  var formFieldsets = adForm.querySelectorAll('fieldset');
   var typeSelect = adForm.querySelector('#type');
   var priceInput = adForm.querySelector('#price');
   var roomSelect = adForm.querySelector('#room_number');
@@ -87,7 +88,25 @@
     roomSelect.addEventListener('change', roomSelectChangeHandler);
   };
 
+  var activateForm = function () {
+    adForm.classList.remove('ad-form--disabled');
+    formFieldsets.forEach(function (el) {
+      el.removeAttribute('disabled');
+    });
+    validateForm();
+  };
+
+  var disableForm = function () {
+    adForm.classList.add('ad-form--disabled');
+    formFieldsets.forEach(function (el) {
+      el.setAttribute('disabled', '');
+    });
+  };
+
+  disableForm();
+
   window.form = {
-    validate: validateForm
+    activate: activateForm,
+    disable: disableForm
   };
 })();

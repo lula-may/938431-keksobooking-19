@@ -1,13 +1,20 @@
 'use strict';
 (function () {
-
+  var ESC_KEY = 'Escape';
+  var ENTER_KEY = 'Enter';
   var housing = {
     palace: 'Дворец',
     flat: 'Квартира',
     house: 'Дом',
     bungalo: 'Бунгало'
   };
+
+  var currentCard;
+  var currentPin;
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+  var mapElement = document.querySelector('.map');
+  var filtersContainer = mapElement.querySelector('.map__filters-container');
+  var advertisements = window.data.list;
 
   var getTypeInRussian = function (type) {
     return housing[type];
@@ -52,6 +59,23 @@
     }
   };
 
+  // Обработчики для кнопки закрытия карточки объявления
+  var closeButtonClickHandler = function () {
+    closeCard();
+  };
+
+  var closeButtonPressEnterHandler = function (evt) {
+    if (evt.key === ENTER_KEY) {
+      closeCard();
+    }
+  };
+
+  var cardPressEscHandler = function (evt) {
+    if (evt.key === ESC_KEY) {
+      closeCard();
+    }
+  };
+
   var fillAdvertisementCard = function (advertisement) {
     var card = cardTemplate.cloneNode(true);
     card.querySelector('.popup__title').textContent = advertisement.offer.title;
@@ -66,10 +90,33 @@
     var photoList = card.querySelector('.popup__photos');
     fillPhotoList(photoList, advertisement.offer.photos);
     card.querySelector('.popup__avatar').src = advertisement.author.avatar;
+
     return card;
   };
 
+  var openCard = function (i) {
+    if (currentPin !== i) {
+      if (currentCard) {
+        currentCard.remove();
+      }
+      currentCard = fillAdvertisementCard(advertisements[i]);
+      currentPin = i;
+      var closeButton = currentCard.querySelector('.popup__close');
+      closeButton.addEventListener('click', closeButtonClickHandler);
+      closeButton.addEventListener('keydown', closeButtonPressEnterHandler);
+      document.addEventListener('keydown', cardPressEscHandler);
+      mapElement.insertBefore(currentCard, filtersContainer);
+    }
+  };
+
+  var closeCard = function () {
+    currentCard.remove();
+    currentPin = null;
+    document.removeEventListener('keydown', cardPressEscHandler);
+  };
+
   window.card = {
-    fill: fillAdvertisementCard
+    open: openCard,
+    close: closeCard
   };
 })();

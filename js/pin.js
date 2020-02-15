@@ -8,12 +8,9 @@
   var pinWidth = MAIN_PIN_SIZE;
   var pinHeight = MAIN_PIN_SIZE;
 
-  // Здесь начинается блок активации страницы
-
   var mapElement = document.querySelector('.map');
   var mapPinMain = mapElement.querySelector('.map__pin--main');
   var addressInput = document.querySelector('#address');
-
 
   // Определяем координаты метки
   var getAddressValue = function () {
@@ -25,7 +22,8 @@
   };
 
   var activatePage = function () {
-    window.page.activate();
+    window.map.activate();
+    window.form.activate();
     pinHeight = PIN_ACTIVE_HEIGHT;
     addressInput.value = getAddressValue();
     mapPinMain.removeEventListener('mousedown', mapPinMainMousedownHandler);
@@ -36,7 +34,6 @@
   var mapPinMainMousedownHandler = function (evt) {
     if (evt.button === LEFT_MOUSE_KEY) {
       activatePage();
-
     }
   };
 

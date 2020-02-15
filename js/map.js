@@ -2,23 +2,25 @@
 
 (function () {
   var ENTER_KEY = 'Enter';
-  var ESC_KEY = 'Escape';
+  // var ESC_KEY = 'Escape';
 
   var PIN_GAP_X = 20;
   var PIN_GAP_Y = 40;
-
   var mapElement = document.querySelector('.map');
+  var filterSelects = mapElement.querySelectorAll('select');
+  var advertisements = window.data.list;
 
   // Обработчики воздействия на метку объявления
   var mapPinClickHandler = function (evt) {
-    openPinCard(evt.currentTarget);
+    window.card.open(evt.currentTarget.i);
   };
 
   var mapPinPressEnterHandler = function (evt) {
     if (evt.key === ENTER_KEY) {
-      openPinCard(evt.currentTarget);
+      window.card.open(evt.currentTarget.i);
     }
   };
+
   // Создание и сборка фрагмента из меток на основе шаблона
   var createPinFragment = function (arr, template) {
     var fragment = document.createDocumentFragment();
@@ -30,7 +32,6 @@
       picture.src = advertisement.author.avatar;
       picture.alt = advertisement.offer.title;
       pinElement.i = i;
-      // pinElement.card = ;
       pinElement.addEventListener('click', mapPinClickHandler);
       pinElement.addEventListener('keydown', mapPinPressEnterHandler);
       fragment.appendChild(pinElement);
@@ -38,7 +39,6 @@
     return fragment;
   };
 
-  var advertisements = window.data.create();
   // Показываем сгенерированные метки
   var showSimilarPins = function () {
     var pinListElement = document.querySelector('.map__pins');
@@ -46,50 +46,25 @@
     pinListElement.appendChild(createPinFragment(advertisements, mapPinTemplate));
   };
 
-  var currentCard;
-  var activePin;
-
-  var closePinCard = function (card) {
-    card.remove();
-    activePin = null;
-    document.removeEventListener('keydown', cardPressEscHandler);
+  var activateMap = function () {
+    mapElement.classList.remove('map--faded');
+    filterSelects.forEach(function (el) {
+      el.removeAttribute('disabled');
+    });
+    showSimilarPins();
   };
 
-  // Обработчики для кнопки закрытия карточки объявления
-  var closeButtonClickHandler = function () {
-    closePinCard(currentCard);
+  var disableMap = function () {
+    mapElement.classList.add('map--faded');
+    filterSelects.forEach(function (el) {
+      el.setAttribute('disabled', '');
+    });
   };
 
-  var closeButtonPressEnterHandler = function (evt) {
-    if (evt.key === ENTER_KEY) {
-      closePinCard(currentCard);
-    }
-  };
-
-  var cardPressEscHandler = function (evt) {
-    if (evt.key === ESC_KEY) {
-      closePinCard(currentCard);
-    }
-  };
-
-  var openPinCard = function (pin) {
-    if (pin !== activePin) {
-      if (currentCard) {
-        currentCard.remove();
-      }
-      currentCard = window.card.fill(advertisements[pin.i]);
-      var closeButton = currentCard.querySelector('.popup__close');
-      var filtersContainer = mapElement.querySelector('.map__filters-container');
-
-      closeButton.addEventListener('click', closeButtonClickHandler);
-      closeButton.addEventListener('keydown', closeButtonPressEnterHandler);
-      document.addEventListener('keydown', cardPressEscHandler);
-      mapElement.insertBefore(currentCard, filtersContainer);
-      activePin = pin;
-    }
-  };
+  disableMap();
 
   window.map = {
-    showPins: showSimilarPins
+    activate: activateMap,
+    disable: disableMap
   };
 })();
