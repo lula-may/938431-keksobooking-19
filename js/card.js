@@ -95,18 +95,19 @@
   };
 
   var openCard = function (i) {
-    if (currentPin !== i) {
-      if (currentCard) {
-        currentCard.remove();
-      }
-      currentCard = fillAdvertisementCard(advertisements[i]);
-      currentPin = i;
-      var closeButton = currentCard.querySelector('.popup__close');
-      closeButton.addEventListener('click', closeButtonClickHandler);
-      closeButton.addEventListener('keydown', closeButtonPressEnterHandler);
-      document.addEventListener('keydown', cardPressEscHandler);
-      mapElement.insertBefore(currentCard, filtersContainer);
+    if (currentPin === i) {
+      return;
     }
+    if (currentCard) {
+      closeCard();
+    }
+    currentCard = fillAdvertisementCard(advertisements[i]);
+    currentPin = i;
+    var closeButton = currentCard.querySelector('.popup__close');
+    closeButton.addEventListener('click', closeButtonClickHandler);
+    closeButton.addEventListener('keydown', closeButtonPressEnterHandler);
+    document.addEventListener('keydown', cardPressEscHandler);
+    mapElement.insertBefore(currentCard, filtersContainer);
   };
 
   var closeCard = function () {
