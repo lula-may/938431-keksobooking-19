@@ -1,7 +1,8 @@
 'use strict';
 
 (function () {
-  var filterSelects = document.querySelectorAll('select');
+  var filterElement = document.querySelector('.map__filters');
+  var filterFields = filterElement.querySelectorAll('select', 'fieldset');
   var advertisements = window.data.list;
 
   var showSimilarPins = function () {
@@ -12,13 +13,13 @@
   };
 
   var activateSelects = function () {
-    filterSelects.forEach(function (el) {
+    filterFields.forEach(function (el) {
       el.removeAttribute('disabled');
     });
   };
 
   var disableSelects = function () {
-    filterSelects.forEach(function (el) {
+    filterFields.forEach(function (el) {
       el.removeAttribute('disabled');
     });
   };
