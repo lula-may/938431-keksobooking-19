@@ -11,7 +11,6 @@
   var capacitySelect = adForm.querySelector('#capacity');
   var timeinSelect = adForm.querySelector('#timein');
   var timeoutSelect = adForm.querySelector('#timeout');
-  var formFields = adForm.querySelectorAll('input', 'select');
 
   // Связываем значение поля "Тип жилья" с полем "Цена"
   var setPriceValidity = function () {
@@ -97,18 +96,12 @@
     validateForm();
   };
 
-  var cleanFields = function () {
-    formFields.forEach(function (el) {
-      el.value = '';
-    });
-  };
-
   var disableForm = function () {
     adForm.classList.add('ad-form--disabled');
     formFieldsets.forEach(function (el) {
       el.setAttribute('disabled', '');
     });
-    cleanFields();
+    adForm.reset();
     typeSelect.removeEventListener('change', typeChangeHandler);
     timeinSelect.removeEventListener('change', timeinSelectChangeHandler);
     timeoutSelect.removeEventListener('change', timeoutSelectChangeHandler);
