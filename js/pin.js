@@ -4,7 +4,7 @@
   var ENTER_KEY = 'Enter';
   var LEFT_MOUSE_KEY = 0;
   var MAIN_PIN_SIZE = 64;
-  var PIN_ACTIVE_HEIGHT = 72;
+  var PIN_ACTIVE_HEIGHT = 73;
   var pinWidth = MAIN_PIN_SIZE;
   var pinHeight = MAIN_PIN_SIZE;
   var MAP_TOP = 130;
@@ -41,7 +41,7 @@
 
   // Определяем координаты метки
   var pinLocation = new Coordinate(mapPinMain.offsetLeft, mapPinMain.offsetTop, pinArea);
-  var calculatedCoords = new Coordinate(pinLocation.x, pinLocation.y);
+  var calculatedCoord = new Coordinate(pinLocation.x, pinLocation.y);
   var shift = new Coordinate(0, 0);
 
   var setAddressValue = function () {
@@ -49,10 +49,10 @@
   };
 
   var setPinLocation = function (mouseShift) {
-    calculatedCoords.x -= mouseShift.x;
-    calculatedCoords.y -= mouseShift.y;
-    pinLocation.setX(calculatedCoords.x);
-    pinLocation.setY(calculatedCoords.y);
+    calculatedCoord.x -= mouseShift.x;
+    calculatedCoord.y -= mouseShift.y;
+    pinLocation.setX(calculatedCoord.x);
+    pinLocation.setY(calculatedCoord.y);
     mapPinMain.style.left = pinLocation.x + 'px';
     mapPinMain.style.top = pinLocation.y + 'px';
   };
