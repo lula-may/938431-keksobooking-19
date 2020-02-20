@@ -2,20 +2,28 @@
 
 (function () {
   var mapElement = document.querySelector('.map');
-  var advertisements = window.data.list;
+  var advertisements = [];
 
-  var showSimilarPins = function () {
+  var getAdvertisements = function (data) {
+    advertisements = data.filter(function (el) {
+      return (el.offer !== undefined);
+    });
+    return advertisements;
+  };
+
+
+  var showSimilarPins = function (data) {
     var pinListElement = document.querySelector('.map__pins');
     var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-    var fragment = window.similarPins.create(advertisements, mapPinTemplate);
+    var fragment = window.similarPins.create(getAdvertisements(data), mapPinTemplate);
     pinListElement.appendChild(fragment);
   };
 
 
   var activateMap = function () {
+    window.backend.load(showSimilarPins, window.error.show);
     mapElement.classList.remove('map--faded');
     window.filter.activate();
-    showSimilarPins();
   };
 
   var disableMap = function () {
