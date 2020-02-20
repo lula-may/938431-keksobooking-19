@@ -70,7 +70,7 @@
   var mapPinMainMousedownHandler = function (evt) {
     if (evt.button === LEFT_MOUSE_KEY) {
       activatePage();
-      mapPinMain.addEventListener('mousedown', mapPinMainDragHandler);
+      // mapPinMain.addEventListener('mousedown', mapPinMainDragHandler);
     }
   };
 
@@ -110,6 +110,7 @@
 
   // Вешаем обработчики воздействия на метку
   mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
+  mapPinMain.addEventListener('mousedown', mapPinMainDragHandler);
   mapPinMain.addEventListener('keydown', mapPinMainPressEnterHandler);
   // Заполняем поле адреса
   setAddressValue();
