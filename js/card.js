@@ -9,12 +9,10 @@
     bungalo: 'Бунгало'
   };
 
-  // var currentCard;
   var currentPin;
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var mapElement = document.querySelector('.map');
   var filtersContainer = mapElement.querySelector('.map__filters-container');
-  // var advertisements = window.data.list;
 
   var getTypeInRussian = function (type) {
     return housing[type];
@@ -51,16 +49,12 @@
 
   var fillPhotoList = function (list, photoSources) {
     var element = list.querySelector('.popup__photo');
-    if (photoSources.length === 0) {
-      element.remove();
-      return;
-    }
-    element.src = photoSources[0];
-    for (var i = 1; i < photoSources.length; i++) {
+    element.remove();
+    photoSources.forEach(function (src) {
       var newElement = element.cloneNode(true);
-      newElement.src = photoSources[i];
+      newElement.src = src;
       list.appendChild(newElement);
-    }
+    });
   };
 
   // Обработчики для кнопки закрытия карточки объявления

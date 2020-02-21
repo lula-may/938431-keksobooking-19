@@ -13,7 +13,7 @@
     hideErrorMessage();
   };
 
-  var EscPressHandler = function (evt) {
+  var escPressHandler = function (evt) {
     if (evt.key === ESC_KEY) {
       hideErrorMessage();
     }
@@ -27,7 +27,7 @@
 
   var hideErrorMessage = function () {
     errorElement.remove();
-    document.removeEventListener('keydown', EscPressHandler);
+    document.removeEventListener('keydown', escPressHandler);
     window.removeEventListener('click', documentClickHandler);
   };
 
@@ -36,7 +36,7 @@
     var button = errorElement.querySelector('.error__button');
     errorElement.querySelector('.error__message').textContent = message;
     button.addEventListener('click', buttonClickHandler);
-    document.addEventListener('keydown', EscPressHandler);
+    document.addEventListener('keydown', escPressHandler);
     document.addEventListener('mousedown', documentClickHandler);
     errorContainer.appendChild(errorElement);
   };
