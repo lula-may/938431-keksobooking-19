@@ -70,7 +70,6 @@
   var mapPinMainMousedownHandler = function (evt) {
     if (evt.button === LEFT_MOUSE_KEY) {
       activatePage();
-      // mapPinMain.addEventListener('mousedown', mapPinMainDragHandler);
     }
   };
 

@@ -9,12 +9,12 @@
     bungalo: 'Бунгало'
   };
 
-  var currentCard;
+  // var currentCard;
   var currentPin;
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var mapElement = document.querySelector('.map');
   var filtersContainer = mapElement.querySelector('.map__filters-container');
-  var advertisements = window.data.list;
+  // var advertisements = window.data.list;
 
   var getTypeInRussian = function (type) {
     return housing[type];
@@ -51,6 +51,10 @@
 
   var fillPhotoList = function (list, photoSources) {
     var element = list.querySelector('.popup__photo');
+    if (photoSources.length === 0) {
+      element.remove();
+      return;
+    }
     element.src = photoSources[0];
     for (var i = 1; i < photoSources.length; i++) {
       var newElement = element.cloneNode(true);
@@ -94,29 +98,31 @@
     return card;
   };
 
-  var openCard = function (i) {
-    if (currentPin === i) {
+  var openCard = function (pin) {
+    if (currentPin === pin) {
       return;
     }
-    if (currentCard) {
+    if (currentPin) {
       closeCard();
     }
-    currentCard = fillAdvertisementCard(advertisements[i]);
-    currentPin = i;
-    var closeButton = currentCard.querySelector('.popup__close');
+    currentPin = pin;
+    currentPin.classList.add('map__pin--active');
+    var closeButton = currentPin.card.querySelector('.popup__close');
     closeButton.addEventListener('click', closeButtonClickHandler);
     closeButton.addEventListener('keydown', closeButtonPressEnterHandler);
     document.addEventListener('keydown', cardPressEscHandler);
-    mapElement.insertBefore(currentCard, filtersContainer);
+    mapElement.insertBefore(currentPin.card, filtersContainer);
   };
 
   var closeCard = function () {
-    currentCard.remove();
+    mapElement.removeChild(currentPin.card);
+    currentPin.classList.remove('map__pin--active');
     currentPin = null;
     document.removeEventListener('keydown', cardPressEscHandler);
   };
 
   window.card = {
+    create: fillAdvertisementCard,
     open: openCard,
     close: closeCard
   };

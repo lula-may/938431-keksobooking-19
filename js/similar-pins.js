@@ -6,12 +6,12 @@
 
   // Обработчики воздействия на метку объявления
   var mapPinClickHandler = function (evt) {
-    window.card.open(evt.currentTarget.i);
+    window.card.open(evt.currentTarget);
   };
 
   var mapPinPressEnterHandler = function (evt) {
     if (evt.key === ENTER_KEY) {
-      window.card.open(evt.currentTarget.i);
+      window.card.open(evt.currentTarget);
     }
   };
 
@@ -25,7 +25,7 @@
       var picture = pinElement.querySelector('img');
       picture.src = advertisement.author.avatar;
       picture.alt = advertisement.offer.title;
-      pinElement.i = i;
+      pinElement.card = window.card.create(advertisement);
       pinElement.addEventListener('click', mapPinClickHandler);
       pinElement.addEventListener('keydown', mapPinPressEnterHandler);
       fragment.appendChild(pinElement);
