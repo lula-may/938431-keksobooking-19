@@ -55,6 +55,11 @@
     select.value = value;
   };
 
+  var doOnSuccessfulSending = function () {
+    window.success.show();
+    resetForm();
+    window.map.reset();
+  };
   // Обработчики изменения значений полей формы
   var typeChangeHandler = function () {
     setPriceValidity();
@@ -76,6 +81,11 @@
     setGuestSelectValidity();
   };
 
+  var adFormSubmitHandler = function (evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(adForm), doOnSuccessfulSending, window.error.show);
+  };
+
   // Валидация формы
   var validateForm = function () {
     // Проверка полей в начале
@@ -94,6 +104,7 @@
       el.removeAttribute('disabled');
     });
     validateForm();
+    adForm.addEventListener('submit', adFormSubmitHandler);
   };
 
   var disableForm = function () {
@@ -101,18 +112,24 @@
     formFieldsets.forEach(function (el) {
       el.setAttribute('disabled', '');
     });
-    adForm.reset();
     typeSelect.removeEventListener('change', typeChangeHandler);
     timeinSelect.removeEventListener('change', timeinSelectChangeHandler);
     timeoutSelect.removeEventListener('change', timeoutSelectChangeHandler);
     capacitySelect.removeEventListener('change', capacitySelectChangeHandler);
     roomSelect.removeEventListener('change', roomSelectChangeHandler);
+    adForm.removeEventListener('submit', adFormSubmitHandler);
+  };
+
+  var resetForm = function () {
+    adForm.reset();
+    disableForm();
   };
 
   disableForm();
 
   window.form = {
     activate: activateForm,
-    disable: disableForm
+    disable: disableForm,
+    reset: resetForm
   };
 })();
