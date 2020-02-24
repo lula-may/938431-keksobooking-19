@@ -10,7 +10,6 @@
   var MAP_TOP = 130;
   var MAP_BOTTOM = 630;
 
-
   var mapElement = document.querySelector('.map');
   var mapPinMain = mapElement.querySelector('.map__pin--main');
   var addressInput = document.querySelector('#address');
@@ -19,6 +18,11 @@
     bottom: MAP_BOTTOM - PIN_ACTIVE_HEIGHT,
     left: (-pinWidth / 2),
     right: mapElement.offsetWidth - pinWidth / 2
+  };
+
+  var START_PIN_COORDS = {
+    x: mapPinMain.offsetLeft,
+    y: mapPinMain.offsetTop
   };
 
   var Coordinate = function (x, y, area) {
@@ -40,21 +44,22 @@
   };
 
   // Определяем координаты метки
-  var pinLocation = new Coordinate(mapPinMain.offsetLeft, mapPinMain.offsetTop, pinArea);
-  var calculatedCoord = new Coordinate(pinLocation.x, pinLocation.y);
-  var shift = new Coordinate(0, 0);
+  var pinLocation = new Coordinate(START_PIN_COORDS.x, START_PIN_COORDS.y, pinArea);
 
   var setAddressValue = function () {
     addressInput.value = ((pinLocation.x + pinWidth / 2) + ', ' + (pinLocation.y + pinHeight));
   };
 
-  var setPinLocation = function (mouseShift) {
-    calculatedCoord.x -= mouseShift.x;
-    calculatedCoord.y -= mouseShift.y;
-    pinLocation.setX(calculatedCoord.x);
-    pinLocation.setY(calculatedCoord.y);
-    mapPinMain.style.left = pinLocation.x + 'px';
-    mapPinMain.style.top = pinLocation.y + 'px';
+  var resetPin = function () {
+    pinHeight = MAIN_PIN_SIZE;
+    pinLocation.x = START_PIN_COORDS.x;
+    pinLocation.y = START_PIN_COORDS.y;
+    mapPinMain.style.left = START_PIN_COORDS.x + 'px';
+    mapPinMain.style.top = START_PIN_COORDS.y + 'px';
+    setAddressValue();
+    mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
+    mapPinMain.addEventListener('mousedown', mapPinMainDragHandler);
+    mapPinMain.addEventListener('keydown', mapPinMainPressEnterHandler);
   };
 
   var activatePage = function () {
@@ -84,6 +89,17 @@
     evt.preventDefault();
     pinArea.right = mapElement.offsetWidth - pinWidth / 2;
     var startCoords = new Coordinate(evt.clientX, evt.clientY);
+    var calculatedCoord = new Coordinate(pinLocation.x, pinLocation.y);
+    var shift = new Coordinate(0, 0);
+
+    var setPinLocation = function (mouseShift) {
+      calculatedCoord.x -= mouseShift.x;
+      calculatedCoord.y -= mouseShift.y;
+      pinLocation.setX(calculatedCoord.x);
+      pinLocation.setY(calculatedCoord.y);
+      mapPinMain.style.left = pinLocation.x + 'px';
+      mapPinMain.style.top = pinLocation.y + 'px';
+    };
 
     var mousemoveHandler = function (moveEvt) {
       moveEvt.preventDefault();
@@ -100,12 +116,13 @@
       document.removeEventListener('mousemove', mousemoveHandler);
       document.removeEventListener('mouseup', mouseupHandler);
       startCoords = null;
+      calculatedCoord = null;
+      shift = null;
     };
 
     document.addEventListener('mousemove', mousemoveHandler);
     window.addEventListener('mouseup', mouseupHandler);
   };
-
 
   // Вешаем обработчики воздействия на метку
   mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
@@ -113,5 +130,9 @@
   mapPinMain.addEventListener('keydown', mapPinMainPressEnterHandler);
   // Заполняем поле адреса
   setAddressValue();
+
+  window.pin = {
+    reset: resetPin
+  };
 })();
 

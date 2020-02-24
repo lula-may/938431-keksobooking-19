@@ -2,7 +2,9 @@
 
 (function () {
   var mapElement = document.querySelector('.map');
+  var pinListElement = document.querySelector('.map__pins');
   var advertisements = [];
+  var fragment;
 
   var getAdvertisements = function (data) {
     advertisements = data.filter(function (el) {
@@ -13,9 +15,8 @@
 
 
   var showSimilarPins = function (data) {
-    var pinListElement = document.querySelector('.map__pins');
     var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-    var fragment = window.similarPins.create(getAdvertisements(data), mapPinTemplate);
+    fragment = window.similarPins.create(getAdvertisements(data), mapPinTemplate);
     pinListElement.appendChild(fragment);
   };
 
@@ -31,10 +32,22 @@
     window.filter.disable();
   };
 
+  var resetMap = function () {
+    var list = Array.from(pinListElement.children);
+    list.forEach(function (el) {
+      if (el.classList.contains('map__pin') && !el.classList.contains('map__pin--main')) {
+        el.remove();
+      }
+    });
+    disableMap();
+    window.pin.reset();
+  };
+
   disableMap();
 
   window.map = {
     activate: activateMap,
-    disable: disableMap
+    disable: disableMap,
+    reset: resetMap
   };
 })();
