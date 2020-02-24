@@ -3,6 +3,7 @@
 (function () {
   var TOO_MANY_ROOMS = '100';
   var NO_GUESTS = '0';
+  var INVALID_STYLE = 'border: 2px solid red';
   var adForm = document.querySelector('.ad-form');
   var formFieldsets = adForm.querySelectorAll('fieldset');
   var formElements = adForm.querySelectorAll('select, input');
@@ -70,7 +71,7 @@
           el.removeEventListener('change', elChangeHandler);
         }
       };
-      el.style.cssText = 'border: 2px solid red';
+      el.style.cssText = INVALID_STYLE;
       el.addEventListener('change', elChangeHandler);
     });
   };
