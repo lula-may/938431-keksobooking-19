@@ -20,10 +20,6 @@
     right: mapElement.offsetWidth - pinWidth / 2
   };
 
-  var START_PIN_COORDS = {
-    x: mapPinMain.offsetLeft,
-    y: mapPinMain.offsetTop
-  };
 
   var Coordinate = function (x, y, area) {
     this.x = x;
@@ -43,8 +39,9 @@
     }
   };
 
-  // Определяем координаты метки
-  var pinLocation = new Coordinate(START_PIN_COORDS.x, START_PIN_COORDS.y, pinArea);
+  // Определяем исходные координаты метки
+  var initialPinCoord = new Coordinate(mapPinMain.offsetLeft, mapPinMain.offsetTop);
+  var pinLocation = new Coordinate(initialPinCoord.x, initialPinCoord.y, pinArea);
 
   var setAddressValue = function () {
     addressInput.value = ((pinLocation.x + pinWidth / 2) + ', ' + (pinLocation.y + pinHeight));
@@ -52,10 +49,10 @@
 
   var resetPin = function () {
     pinHeight = MAIN_PIN_SIZE;
-    pinLocation.x = START_PIN_COORDS.x;
-    pinLocation.y = START_PIN_COORDS.y;
-    mapPinMain.style.left = START_PIN_COORDS.x + 'px';
-    mapPinMain.style.top = START_PIN_COORDS.y + 'px';
+    pinLocation.x = initialPinCoord.x;
+    pinLocation.y = initialPinCoord.y;
+    mapPinMain.style.left = initialPinCoord.x + 'px';
+    mapPinMain.style.top = initialPinCoord.y + 'px';
     setAddressValue();
     mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
     mapPinMain.addEventListener('mousedown', mapPinMainDragHandler);
