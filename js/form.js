@@ -3,7 +3,6 @@
 (function () {
   var TOO_MANY_ROOMS = '100';
   var NO_GUESTS = '0';
-  var INVALID_STYLE = 'border: 2px solid red';
   var adForm = document.querySelector('.ad-form');
   var formFieldsets = adForm.querySelectorAll('fieldset');
   var formElements = adForm.querySelectorAll('select, input');
@@ -60,18 +59,18 @@
 
   // Подсвечиваем невалидные поля при попытке отправки
   var highlightInvalidFields = function () {
-    var invalidFields = Array.from(formElements).filter(function (el) {
+    var invalidFields = [].filter.call(formElements, function (el) {
       return !el.validity.valid;
     });
 
     invalidFields.forEach(function (el) {
       var elChangeHandler = function () {
         if (el.validity.valid) {
-          el.style.cssText = '';
+          el.classList.remove('invalid');
           el.removeEventListener('change', elChangeHandler);
         }
       };
-      el.style.cssText = INVALID_STYLE;
+      el.classList.add('invalid');
       el.addEventListener('change', elChangeHandler);
     });
   };
@@ -79,8 +78,17 @@
   // Действия при успешной оправке формы
   var doOnSuccessfulSending = function () {
     window.success.show();
-    resetForm();
+    adForm.reset();
+    disableForm();
     window.map.reset();
+  };
+
+  // Действия при сбросе значений формы
+  var doOnFormReset = function () {
+    window.pin.reset();
+    [].forEach.call(formElements, function (el) {
+      el.classList.toggle('invalid', false);
+    });
   };
 
   // Обработчики изменения значений полей формы
@@ -104,12 +112,16 @@
     setGuestSelectValidity();
   };
 
+  var adFormResetHandler = function () {
+    doOnFormReset();
+  };
+
   var adFormSubmitHandler = function (evt) {
     evt.preventDefault();
     window.backend.save(new FormData(adForm), doOnSuccessfulSending, window.error.show);
   };
 
-  var clickSubmitButtonHandler = function () {
+  var submitButtonClickHandler = function () {
     highlightInvalidFields();
   };
 
@@ -131,8 +143,10 @@
       el.removeAttribute('disabled');
     });
     validateForm();
+    adForm.addEventListener('reset', adFormResetHandler);
     adForm.addEventListener('submit', adFormSubmitHandler);
-    submitButton.addEventListener('click', clickSubmitButtonHandler);
+    adForm.addEventListener('reset', adFormResetHandler);
+    submitButton.addEventListener('click', submitButtonClickHandler);
   };
 
   var disableForm = function () {
@@ -146,19 +160,14 @@
     capacitySelect.removeEventListener('change', capacitySelectChangeHandler);
     roomSelect.removeEventListener('change', roomSelectChangeHandler);
     adForm.removeEventListener('submit', adFormSubmitHandler);
-    // adForm.removeEventListener('oninvalid', adFormInvalidHandler);
-  };
-
-  var resetForm = function () {
-    adForm.reset();
-    disableForm();
+    adForm.removeEventListener('reset', adFormResetHandler);
+    submitButton.removeEventListener('click', submitButtonClickHandler);
   };
 
   disableForm();
 
   window.form = {
     activate: activateForm,
-    disable: disableForm,
-    reset: resetForm
+    disable: disableForm
   };
 })();

@@ -628,6 +628,10 @@ fieldset {
           box-shadow: 0 0 2px 2px #ff6547;
 }
 
+.ad-form__element .invalid {
+    border: 2px solid red;
+}
+
 .ad-form__element--time {
   -ms-flex-preferred-size: 50%;
       flex-basis: 50%;
