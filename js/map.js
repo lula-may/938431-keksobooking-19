@@ -4,7 +4,6 @@
   var mapElement = document.querySelector('.map');
   var pinListElement = document.querySelector('.map__pins');
   var advertisements = [];
-  var fragment;
 
   var getAdvertisements = function (data) {
     advertisements = data.filter(function (el) {
@@ -16,7 +15,7 @@
 
   var showSimilarPins = function (data) {
     var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-    fragment = window.similarPins.create(getAdvertisements(data), mapPinTemplate);
+    var fragment = window.similarPins.create(getAdvertisements(data), mapPinTemplate);
     pinListElement.appendChild(fragment);
   };
 
@@ -33,11 +32,9 @@
   };
 
   var resetMap = function () {
-    var list = Array.from(pinListElement.children);
-    list.forEach(function (el) {
-      if (el.classList.contains('map__pin') && !el.classList.contains('map__pin--main')) {
-        el.remove();
-      }
+    var pins = Array.from(pinListElement.querySelectorAll('.map__pin:not(.map__pin--main)'));
+    pins.forEach(function (el) {
+      el.remove();
     });
     disableMap();
     window.pin.reset();
