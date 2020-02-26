@@ -12,7 +12,13 @@
   var capacitySelect = adForm.querySelector('#capacity');
   var timeinSelect = adForm.querySelector('#timein');
   var timeoutSelect = adForm.querySelector('#timeout');
-  var submitButton = adForm.querySelector('.ad-form__submit');
+  var initialValue = {};
+
+  var getInitialFieldValues = function () {
+    [].forEach.call(formElements, function (el) {
+      initialValue[el.id] = el.value;
+    });
+  };
 
   // Связываем значение поля "Тип жилья" с полем "Цена"
   var setPriceValidity = function () {
@@ -57,41 +63,21 @@
     select.value = value;
   };
 
-  // Подсвечиваем невалидные поля при попытке отправки
-  var highlightInvalidFields = function () {
-    var invalidFields = [].filter.call(formElements, function (el) {
-      return !el.validity.valid;
+  // Действия при сбросе формы
+  var resetForm = function () {
+    [].forEach.call(formElements, function (el) {
+      el.value = initialValue[el.id];
+      el.checked = false;
     });
-
-    invalidFields.forEach(function (el) {
-      var elChangeHandler = function () {
-        if (el.validity.valid) {
-          el.classList.remove('invalid');
-          el.removeEventListener('change', elChangeHandler);
-        }
-      };
-      el.classList.add('invalid');
-      el.addEventListener('change', elChangeHandler);
-    });
+    adForm.classList.toggle('ad-form--invalid', false);
+    window.map.reset();
+    disableForm();
   };
 
   // Действия при успешной оправке формы
   var doOnSuccessfulSending = function () {
     window.success.show();
-    adForm.reset();
-    disableForm();
-    window.map.reset();
-  };
-
-  // Действия при сбросе значений формы
-  var doOnFormReset = function () {
-    [].forEach.call(formElements, function (el) {
-      el.value = '';
-      el.checked = false;
-      el.classList.toggle('invalid', false);
-    });
-    window.pin.reset();
-    window.map.reset();
+    resetForm();
   };
 
   // Обработчики изменения значений полей формы
@@ -117,16 +103,14 @@
 
   var adFormResetHandler = function (evt) {
     evt.preventDefault();
-    doOnFormReset();
+    resetForm();
   };
 
   var adFormSubmitHandler = function (evt) {
     evt.preventDefault();
-    window.backend.save(new FormData(adForm), doOnSuccessfulSending, window.error.show);
-  };
-
-  var submitButtonClickHandler = function () {
-    highlightInvalidFields();
+    return (adForm.reportValidity())
+      ? window.backend.save(new FormData(adForm), doOnSuccessfulSending, window.error.show)
+      : adForm.classList.add('ad-form--invalid');
   };
 
   // Валидация формы
@@ -150,7 +134,6 @@
     adForm.addEventListener('reset', adFormResetHandler);
     adForm.addEventListener('submit', adFormSubmitHandler);
     adForm.addEventListener('reset', adFormResetHandler);
-    submitButton.addEventListener('click', submitButtonClickHandler);
   };
 
   var disableForm = function () {
@@ -165,9 +148,9 @@
     roomSelect.removeEventListener('change', roomSelectChangeHandler);
     adForm.removeEventListener('submit', adFormSubmitHandler);
     adForm.removeEventListener('reset', adFormResetHandler);
-    submitButton.removeEventListener('click', submitButtonClickHandler);
   };
 
+  getInitialFieldValues();
   disableForm();
 
   window.form = {

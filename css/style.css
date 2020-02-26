@@ -628,8 +628,9 @@ fieldset {
           box-shadow: 0 0 2px 2px #ff6547;
 }
 
-.ad-form__element .invalid {
-    border: 2px solid red;
+.ad-form--invalid input:invalid,
+.ad-form--invalid select:invalid {
+  border: 2px solid red;
 }
 
 .ad-form__element--time {
