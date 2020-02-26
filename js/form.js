@@ -85,10 +85,13 @@
 
   // Действия при сбросе значений формы
   var doOnFormReset = function () {
-    window.pin.reset();
     [].forEach.call(formElements, function (el) {
+      el.value = '';
+      el.checked = false;
       el.classList.toggle('invalid', false);
     });
+    window.pin.reset();
+    window.map.reset();
   };
 
   // Обработчики изменения значений полей формы
@@ -112,7 +115,8 @@
     setGuestSelectValidity();
   };
 
-  var adFormResetHandler = function () {
+  var adFormResetHandler = function (evt) {
+    evt.preventDefault();
     doOnFormReset();
   };
 
