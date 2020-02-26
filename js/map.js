@@ -32,10 +32,7 @@
   };
 
   var resetMap = function () {
-    var pins = Array.from(pinListElement.querySelectorAll('.map__pin:not(.map__pin--main)'));
-    pins.forEach(function (el) {
-      el.remove();
-    });
+    window.similarPins.remove();
     disableMap();
     window.pin.reset();
   };
