@@ -41,16 +41,13 @@
 
   // Определяем исходные координаты метки
   var initialPinCoord = new Coordinate(mapPinMain.offsetLeft, mapPinMain.offsetTop);
-  var pinLocation = new Coordinate(initialPinCoord.x, initialPinCoord.y, pinArea);
 
   var setAddressValue = function () {
-    addressInput.value = ((pinLocation.x + pinWidth / 2) + ', ' + (pinLocation.y + pinHeight));
+    addressInput.value = ((mapPinMain.offsetLeft + pinWidth / 2) + ', ' + (mapPinMain.offsetTop + pinHeight));
   };
 
   var resetPin = function () {
     pinHeight = MAIN_PIN_SIZE;
-    pinLocation.x = initialPinCoord.x;
-    pinLocation.y = initialPinCoord.y;
     mapPinMain.style.left = initialPinCoord.x + 'px';
     mapPinMain.style.top = initialPinCoord.y + 'px';
     setAddressValue();
@@ -84,6 +81,7 @@
   // Обработчик перетаскивания метки
   var mapPinMainDragHandler = function (evt) {
     evt.preventDefault();
+    var pinLocation = new Coordinate(mapPinMain.offsetLeft, mapPinMain.offsetTop, pinArea);
     pinArea.right = mapElement.offsetWidth - pinWidth / 2;
     var startCoords = new Coordinate(evt.clientX, evt.clientY);
     var calculatedCoord = new Coordinate(pinLocation.x, pinLocation.y);
@@ -115,6 +113,7 @@
       startCoords = null;
       calculatedCoord = null;
       shift = null;
+      pinLocation = null;
     };
 
     document.addEventListener('mousemove', mousemoveHandler);
