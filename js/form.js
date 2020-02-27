@@ -5,20 +5,13 @@
   var NO_GUESTS = '0';
   var adForm = document.querySelector('.ad-form');
   var formFieldsets = adForm.querySelectorAll('fieldset');
-  var formElements = adForm.querySelectorAll('select, input');
   var typeSelect = adForm.querySelector('#type');
   var priceInput = adForm.querySelector('#price');
   var roomSelect = adForm.querySelector('#room_number');
   var capacitySelect = adForm.querySelector('#capacity');
   var timeinSelect = adForm.querySelector('#timein');
   var timeoutSelect = adForm.querySelector('#timeout');
-  var initialValue = {};
-
-  var getInitialFieldValues = function () {
-    [].forEach.call(formElements, function (el) {
-      initialValue[el.id] = el.value;
-    });
-  };
+  var resetButton = adForm.querySelector('.ad-form__reset');
 
   // Связываем значение поля "Тип жилья" с полем "Цена"
   var setPriceValidity = function () {
@@ -64,11 +57,8 @@
   };
 
   // Действия при сбросе формы
-  var resetForm = function () {
-    [].forEach.call(formElements, function (el) {
-      el.value = initialValue[el.id];
-      el.checked = false;
-    });
+  var doOnFormReset = function () {
+    adForm.reset();
     adForm.classList.toggle('ad-form--invalid', false);
     window.map.reset();
     disableForm();
@@ -77,7 +67,7 @@
   // Действия при успешной оправке формы
   var doOnSuccessfulSending = function () {
     window.success.show();
-    resetForm();
+    doOnFormReset();
   };
 
   // Обработчики изменения значений полей формы
@@ -101,9 +91,10 @@
     setGuestSelectValidity();
   };
 
-  var adFormResetHandler = function (evt) {
+  var resetButtonClickHandler = function (evt) {
     evt.preventDefault();
-    resetForm();
+    evt.stopPropagation();
+    doOnFormReset();
   };
 
   var adFormSubmitHandler = function (evt) {
@@ -131,9 +122,8 @@
       el.removeAttribute('disabled');
     });
     validateForm();
-    adForm.addEventListener('reset', adFormResetHandler);
+    resetButton.addEventListener('click', resetButtonClickHandler);
     adForm.addEventListener('submit', adFormSubmitHandler);
-    adForm.addEventListener('reset', adFormResetHandler);
   };
 
   var disableForm = function () {
@@ -147,10 +137,9 @@
     capacitySelect.removeEventListener('change', capacitySelectChangeHandler);
     roomSelect.removeEventListener('change', roomSelectChangeHandler);
     adForm.removeEventListener('submit', adFormSubmitHandler);
-    adForm.removeEventListener('reset', adFormResetHandler);
+    resetButton.removeEventListener('click', resetButtonClickHandler);
   };
 
-  getInitialFieldValues();
   disableForm();
 
   window.form = {
