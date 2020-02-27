@@ -3,7 +3,41 @@
   var ENTER_KEY = 'Enter';
   var PIN_GAP_X = 20;
   var PIN_GAP_Y = 40;
+  var MAX_SIMILAR_AMOUNT = 5;
   var pins = [];
+  var advertisements = [];
+
+  var getAdvertisements = function (data) {
+    advertisements = data.filter(function (el) {
+      return (el.offer !== undefined);
+    });
+    showAnyPins();
+    return advertisements;
+  };
+
+  var showAnyPins = function () {
+    var currentData = advertisements.slice(0, MAX_SIMILAR_AMOUNT);
+    createPinFragment(currentData);
+  };
+
+  var updatePinsByType = function (type) {
+    removePins();
+    if (type === 'any') {
+      showAnyPins();
+      return;
+    }
+    var filteredData = [];
+    for (var i = 0; i < advertisements.length; i++) {
+      while (filteredData.length <= MAX_SIMILAR_AMOUNT) {
+        if (advertisements[i].offer.type === type) {
+          filteredData.push(advertisements[i]);
+        }
+      }
+      createPinFragment(filteredData);
+      return;
+    }
+  };
+
   // Обработчики воздействия на метку объявления
   var mapPinClickHandler = function (evt) {
     window.card.open(evt.currentTarget);
@@ -16,7 +50,8 @@
   };
 
   // Создание и сборка фрагмента из меток на основе шаблона
-  var createPinFragment = function (arr, template) {
+  var createPinFragment = function (arr) {
+    var template = document.querySelector('#pin').content.querySelector('.map__pin');
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < arr.length; i++) {
       var advertisement = arr[i];
@@ -31,7 +66,7 @@
       fragment.appendChild(pinElement);
       pins.push(pinElement);
     }
-    return fragment;
+    window.map.showPins(fragment);
   };
 
   var removePins = function () {
@@ -42,6 +77,8 @@
 
   window.similarPins = {
     create: createPinFragment,
-    remove: removePins
+    remove: removePins,
+    init: getAdvertisements,
+    updateByType: updatePinsByType
   };
 })();
