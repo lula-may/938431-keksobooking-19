@@ -20,22 +20,61 @@
     createPinFragment(currentData);
   };
 
-  var updatePinsByType = function (type) {
+  var getPriceRange = function (value) {
+    if (value >= 50000) {
+      return 'high';
+    }
+    if (value >= 10000) {
+      return 'middle';
+    }
+    return 'low';
+  };
+
+  var fitsToFilter = function (advertisement, filter) {
+    var offer = advertisement.offer;
+    if (!(offer.type === filter.type || filter.type === 'any')) {
+      return false;
+    }
+    if (!(getPriceRange(offer.price) === filter.price || filter.price === 'any')) {
+      return false;
+    }
+    if (!(offer.rooms + '' === filter.rooms || filter.rooms === 'any')) {
+      return false;
+    }
+    if (!(offer.guests + '' === filter.guests || filter.guests === 'any')) {
+      return false;
+    }
+    return true;
+  };
+
+  var isDefault = function (filter) {
+    for (var prop in filter) {
+      if (filter.hasOwnProperty(prop)) {
+        if (filter[prop] !== 'any') {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  var updatePins = function (filter) {
     removePins();
-    if (type === 'any') {
+    if (isDefault(filter)) {
       showAnyPins();
       return;
     }
     var filteredData = [];
     for (var i = 0; i < advertisements.length; i++) {
-      while (filteredData.length <= MAX_SIMILAR_AMOUNT) {
-        if (advertisements[i].offer.type === type) {
-          filteredData.push(advertisements[i]);
+      if (fitsToFilter(advertisements[i], filter)) {
+        filteredData.push(advertisements[i]);
+        if (filteredData.length === MAX_SIMILAR_AMOUNT) {
+          createPinFragment(filteredData);
+          return;
         }
       }
-      createPinFragment(filteredData);
-      return;
     }
+    createPinFragment(filteredData);
   };
 
   // Обработчики воздействия на метку объявления
@@ -73,12 +112,13 @@
     pins.forEach(function (el) {
       el.remove();
     });
+    pins.length = 0;
   };
 
   window.similarPins = {
     create: createPinFragment,
     remove: removePins,
     init: getAdvertisements,
-    updateByType: updatePinsByType
+    update: updatePins
   };
 })();

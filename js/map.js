@@ -22,6 +22,7 @@
   };
 
   var resetMap = function () {
+    window.card.close();
     window.similarPins.remove();
     disableMap();
     window.pin.reset();
