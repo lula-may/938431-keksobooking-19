@@ -26,7 +26,7 @@
     removePins();
     var filteredData = [];
     for (var i = 0; i < advertisements.length; i++) {
-      if (window.data.fitsToFilter(advertisements[i], filter)) {
+      if (window.data.matches(advertisements[i], filter)) {
         filteredData.push(advertisements[i]);
         if (filteredData.length === MAX_SIMILAR_AMOUNT) {
           createPinFragment(filteredData);

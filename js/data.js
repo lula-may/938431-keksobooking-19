@@ -22,7 +22,7 @@
     return RANGE.LOW;
   };
 
-  var fitsToFilter = function (advertisement, filter) {
+  var matchesFilter = function (advertisement, filter) {
     var offer = advertisement.offer;
     if (!(offer.type === filter.type || filter.type === NOT_SET)) {
       return false;
@@ -46,6 +46,6 @@
   };
 
   window.data = {
-    fitsToFilter: fitsToFilter
+    matches: matchesFilter
   };
 })();
