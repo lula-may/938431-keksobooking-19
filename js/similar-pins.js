@@ -4,17 +4,6 @@
   var PIN_GAP_X = 20;
   var PIN_GAP_Y = 40;
   var MAX_SIMILAR_AMOUNT = 5;
-  var PRICE = {
-    HIGH: 50000,
-    MIDDLE: 10000,
-  };
-  var RANGE = {
-    HIGH: 'high',
-    MIDDLE: 'middle',
-    LOW: 'low'
-  };
-
-  var NOT_SET = 'any';
 
   var pins = [];
   var advertisements = [];
@@ -32,44 +21,12 @@
     createPinFragment(currentData);
   };
 
-  var getPriceRange = function (value) {
-    if (value >= PRICE.HIGH) {
-      return RANGE.HIGH;
-    }
-    if (value >= PRICE.MIDDLE) {
-      return RANGE.MIDDLE;
-    }
-    return RANGE.LOW;
-  };
-
-  var fitsToFilter = function (advertisement, filter) {
-    var offer = advertisement.offer;
-    if (!(offer.type === filter.type || filter.type === NOT_SET)) {
-      return false;
-    }
-    if (!(getPriceRange(offer.price) === filter.price || filter.price === NOT_SET)) {
-      return false;
-    }
-    if (!(offer.rooms + '' === filter.rooms || filter.rooms === NOT_SET)) {
-      return false;
-    }
-    if (!(offer.guests + '' === filter.guests || filter.guests === NOT_SET)) {
-      return false;
-    }
-    for (var i = 0; i < filter.features.length; i++) {
-      var currentFeature = filter.features[i];
-      if (offer.features.indexOf(currentFeature) === -1) {
-        return false;
-      }
-    }
-    return true;
-  };
 
   var updatePins = function (filter) {
     removePins();
     var filteredData = [];
     for (var i = 0; i < advertisements.length; i++) {
-      if (fitsToFilter(advertisements[i], filter)) {
+      if (window.data.fitsToFilter(advertisements[i], filter)) {
         filteredData.push(advertisements[i]);
         if (filteredData.length === MAX_SIMILAR_AMOUNT) {
           createPinFragment(filteredData);
