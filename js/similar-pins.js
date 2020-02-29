@@ -4,6 +4,18 @@
   var PIN_GAP_X = 20;
   var PIN_GAP_Y = 40;
   var MAX_SIMILAR_AMOUNT = 5;
+  var PRICE = {
+    HIGH: 50000,
+    MIDDLE: 10000,
+  };
+  var RANGE = {
+    HIGH: 'high',
+    MIDDLE: 'middle',
+    LOW: 'low'
+  };
+
+  var NOT_SET = 'any';
+
   var pins = [];
   var advertisements = [];
 
@@ -21,38 +33,33 @@
   };
 
   var getPriceRange = function (value) {
-    if (value >= 50000) {
-      return 'high';
+    if (value >= PRICE.HIGH) {
+      return RANGE.HIGH;
     }
-    if (value >= 10000) {
-      return 'middle';
+    if (value >= PRICE.MIDDLE) {
+      return RANGE.MIDDLE;
     }
-    return 'low';
+    return RANGE.LOW;
   };
 
   var fitsToFilter = function (advertisement, filter) {
     var offer = advertisement.offer;
-    if (!(offer.type === filter.type || filter.type === 'any')) {
+    if (!(offer.type === filter.type || filter.type === NOT_SET)) {
       return false;
     }
-    if (!(getPriceRange(offer.price) === filter.price || filter.price === 'any')) {
+    if (!(getPriceRange(offer.price) === filter.price || filter.price === NOT_SET)) {
       return false;
     }
-    if (!(offer.rooms + '' === filter.rooms || filter.rooms === 'any')) {
+    if (!(offer.rooms + '' === filter.rooms || filter.rooms === NOT_SET)) {
       return false;
     }
-    if (!(offer.guests + '' === filter.guests || filter.guests === 'any')) {
+    if (!(offer.guests + '' === filter.guests || filter.guests === NOT_SET)) {
       return false;
     }
-    return true;
-  };
-
-  var isDefault = function (filter) {
-    for (var prop in filter) {
-      if (filter.hasOwnProperty(prop)) {
-        if (filter[prop] !== 'any') {
-          return false;
-        }
+    for (var i = 0; i < filter.features.length; i++) {
+      var currentFeature = filter.features[i];
+      if (offer.features.indexOf(currentFeature) === -1) {
+        return false;
       }
     }
     return true;
@@ -60,10 +67,6 @@
 
   var updatePins = function (filter) {
     removePins();
-    if (isDefault(filter)) {
-      showAnyPins();
-      return;
-    }
     var filteredData = [];
     for (var i = 0; i < advertisements.length; i++) {
       if (fitsToFilter(advertisements[i], filter)) {
