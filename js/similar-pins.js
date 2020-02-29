@@ -22,7 +22,7 @@
   };
 
 
-  var updatePins = function (filter) {
+  var updatePins = window.debounce(function (filter) {
     removePins();
     var filteredData = [];
     for (var i = 0; i < advertisements.length; i++) {
@@ -35,7 +35,7 @@
       }
     }
     createPinFragment(filteredData);
-  };
+  });
 
   // Обработчики воздействия на метку объявления
   var mapPinClickHandler = function (evt) {
@@ -76,7 +76,6 @@
   };
 
   window.similarPins = {
-    create: createPinFragment,
     remove: removePins,
     init: getAdvertisements,
     update: updatePins

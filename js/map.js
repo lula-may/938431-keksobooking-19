@@ -32,7 +32,6 @@
 
   window.map = {
     activate: activateMap,
-    disable: disableMap,
     reset: resetMap,
     showPins: showSimilarPins
   };
