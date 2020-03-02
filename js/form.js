@@ -61,6 +61,7 @@
     adForm.reset();
     adForm.classList.toggle('ad-form--invalid', false);
     window.map.reset();
+    window.imgLoader.disable();
     disableForm();
   };
 
@@ -124,6 +125,7 @@
     validateForm();
     resetButton.addEventListener('click', resetButtonClickHandler);
     adForm.addEventListener('submit', adFormSubmitHandler);
+    window.imgLoader.activate();
   };
 
   var disableForm = function () {

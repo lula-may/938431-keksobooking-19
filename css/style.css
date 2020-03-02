@@ -542,6 +542,17 @@ fieldset {
   background-color: #dadada;
 }
 
+.ad-form-header__preview--chosen {
+  flex-shrink: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ad-form-header__preview--chosen img {
+  width: 70px;
+  height: auto;
+}
+
 .ad-form__field {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -878,6 +889,17 @@ fieldset {
   outline: none;
   -webkit-box-shadow: 0 0 2px 2px #ff6547;
           box-shadow: 0 0 2px 2px #ff6547;
+}
+
+.ad-form .chosen {
+  flex-shrink: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ad-form img.loaded {
+  width: auto;
+  height: 100%;
 }
 
 
