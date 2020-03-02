@@ -2,6 +2,7 @@
 
 (function () {
   var mapElement = document.querySelector('.map');
+  var pinListElement = document.querySelector('.map__pins');
   var advertisements = [];
 
   var getAdvertisements = function (data) {
@@ -13,7 +14,6 @@
 
 
   var showSimilarPins = function (data) {
-    var pinListElement = document.querySelector('.map__pins');
     var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
     var fragment = window.similarPins.create(getAdvertisements(data), mapPinTemplate);
     pinListElement.appendChild(fragment);
@@ -31,10 +31,17 @@
     window.filter.disable();
   };
 
+  var resetMap = function () {
+    window.similarPins.remove();
+    disableMap();
+    window.pin.reset();
+  };
+
   disableMap();
 
   window.map = {
     activate: activateMap,
-    disable: disableMap
+    disable: disableMap,
+    reset: resetMap
   };
 })();

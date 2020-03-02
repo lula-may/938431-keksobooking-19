@@ -3,7 +3,7 @@
   var ENTER_KEY = 'Enter';
   var PIN_GAP_X = 20;
   var PIN_GAP_Y = 40;
-
+  var pins = [];
   // Обработчики воздействия на метку объявления
   var mapPinClickHandler = function (evt) {
     window.card.open(evt.currentTarget);
@@ -29,11 +29,19 @@
       pinElement.addEventListener('click', mapPinClickHandler);
       pinElement.addEventListener('keydown', mapPinPressEnterHandler);
       fragment.appendChild(pinElement);
+      pins.push(pinElement);
     }
     return fragment;
   };
 
+  var removePins = function () {
+    pins.forEach(function (el) {
+      el.remove();
+    });
+  };
+
   window.similarPins = {
-    create: createPinFragment
+    create: createPinFragment,
+    remove: removePins
   };
 })();

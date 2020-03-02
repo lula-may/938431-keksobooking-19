@@ -11,6 +11,7 @@
   var capacitySelect = adForm.querySelector('#capacity');
   var timeinSelect = adForm.querySelector('#timein');
   var timeoutSelect = adForm.querySelector('#timeout');
+  var resetButton = adForm.querySelector('.ad-form__reset');
 
   // Связываем значение поля "Тип жилья" с полем "Цена"
   var setPriceValidity = function () {
@@ -55,6 +56,20 @@
     select.value = value;
   };
 
+  // Действия при сбросе формы
+  var doOnFormReset = function () {
+    adForm.reset();
+    adForm.classList.toggle('ad-form--invalid', false);
+    window.map.reset();
+    disableForm();
+  };
+
+  // Действия при успешной оправке формы
+  var doOnSuccessfulSending = function () {
+    window.success.show();
+    doOnFormReset();
+  };
+
   // Обработчики изменения значений полей формы
   var typeChangeHandler = function () {
     setPriceValidity();
@@ -76,6 +91,19 @@
     setGuestSelectValidity();
   };
 
+  var resetButtonClickHandler = function (evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    doOnFormReset();
+  };
+
+  var adFormSubmitHandler = function (evt) {
+    evt.preventDefault();
+    return (adForm.reportValidity())
+      ? window.backend.save(new FormData(adForm), doOnSuccessfulSending, window.error.show)
+      : adForm.classList.add('ad-form--invalid');
+  };
+
   // Валидация формы
   var validateForm = function () {
     // Проверка полей в начале
@@ -94,6 +122,8 @@
       el.removeAttribute('disabled');
     });
     validateForm();
+    resetButton.addEventListener('click', resetButtonClickHandler);
+    adForm.addEventListener('submit', adFormSubmitHandler);
   };
 
   var disableForm = function () {
@@ -101,12 +131,13 @@
     formFieldsets.forEach(function (el) {
       el.setAttribute('disabled', '');
     });
-    adForm.reset();
     typeSelect.removeEventListener('change', typeChangeHandler);
     timeinSelect.removeEventListener('change', timeinSelectChangeHandler);
     timeoutSelect.removeEventListener('change', timeoutSelectChangeHandler);
     capacitySelect.removeEventListener('change', capacitySelectChangeHandler);
     roomSelect.removeEventListener('change', roomSelectChangeHandler);
+    adForm.removeEventListener('submit', adFormSubmitHandler);
+    resetButton.removeEventListener('click', resetButtonClickHandler);
   };
 
   disableForm();
