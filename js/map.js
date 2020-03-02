@@ -3,25 +3,15 @@
 (function () {
   var mapElement = document.querySelector('.map');
   var pinListElement = document.querySelector('.map__pins');
-  var advertisements = [];
-
-  var getAdvertisements = function (data) {
-    advertisements = data.filter(function (el) {
-      return (el.offer !== undefined);
-    });
-    return advertisements;
-  };
 
 
-  var showSimilarPins = function (data) {
-    var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-    var fragment = window.similarPins.create(getAdvertisements(data), mapPinTemplate);
+  var showSimilarPins = function (fragment) {
     pinListElement.appendChild(fragment);
   };
 
 
   var activateMap = function () {
-    window.backend.load(showSimilarPins, window.error.show);
+    window.backend.load(window.similarPins.init, window.error.show);
     mapElement.classList.remove('map--faded');
     window.filter.activate();
   };
@@ -32,6 +22,7 @@
   };
 
   var resetMap = function () {
+    window.card.close();
     window.similarPins.remove();
     disableMap();
     window.pin.reset();
@@ -41,7 +32,7 @@
 
   window.map = {
     activate: activateMap,
-    disable: disableMap,
-    reset: resetMap
+    reset: resetMap,
+    showPins: showSimilarPins
   };
 })();

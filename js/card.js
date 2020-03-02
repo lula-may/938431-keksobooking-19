@@ -109,6 +109,9 @@
   };
 
   var closeCard = function () {
+    if (!currentPin) {
+      return;
+    }
     mapElement.removeChild(currentPin.card);
     currentPin.classList.remove('map__pin--active');
     currentPin = null;
