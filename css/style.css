@@ -898,6 +898,7 @@ fieldset {
 }
 
 .ad-form img.loaded {
+  min-width: 100%;
   width: auto;
   height: 100%;
 }
