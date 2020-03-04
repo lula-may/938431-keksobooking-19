@@ -1,31 +1,17 @@
 'use strict';
 
 (function () {
-  var NOT_SET = 'any';
   var filterElement = document.querySelector('.map__filters');
-  var filterFields = filterElement.querySelectorAll('select', 'fieldset');
-  var idToProperty = {
-    'housing-type': 'type',
-    'housing-price': 'price',
-    'housing-rooms': 'rooms',
-    'housing-guests': 'guests'
-  };
-
-  var filterState = {};
+  var filterFields = filterElement.querySelectorAll('select, fieldset');
+  var PREFIX = 'housing-';
+  var filterState;
 
   var updateFilterState = function (control) {
-    switch (control.nodeName.toLowerCase()) {
-      case 'input':
-        var index = filterState.features.indexOf(control.value);
-        if (index === -1) {
-          filterState.features.push(control.value);
-          return;
-        }
-        filterState.features.splice(index, 1);
-        return;
-      default:
-        filterState[idToProperty[control.id]] = control.value;
+    if (control.name === 'features') {
+      filterState.features[control.value] = (filterState.features[control.value]) ? false : true;
+      return;
     }
+    filterState[(control.name).replace(PREFIX, '')] = control.value;
   };
 
   var doOnFilterChange = function (control) {
@@ -42,14 +28,6 @@
     filterFields.forEach(function (el) {
       el.removeAttribute('disabled');
     });
-    filterState = {
-      type: NOT_SET,
-      price: NOT_SET,
-      rooms: NOT_SET,
-      guests: NOT_SET,
-      features: []
-    };
-    filterElement.addEventListener('change', filterChangeHandler);
   };
 
   var disableFilter = function () {
@@ -57,8 +35,12 @@
       el.setAttribute('disabled', '');
     });
     filterElement.reset();
-    filterElement.removeEventListener('change', filterChangeHandler);
+    filterState = {
+      features: {}
+    };
   };
+
+  filterElement.addEventListener('change', filterChangeHandler);
 
   window.filter = {
     activate: activateFilter,

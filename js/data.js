@@ -22,27 +22,37 @@
     return RANGE.LOW;
   };
 
-  var matchesFilter = function (advertisement, filter) {
-    var offer = advertisement.offer;
-    if (!(offer.type === filter.type || filter.type === NOT_SET)) {
-      return false;
-    }
-    if (!(getPriceRange(offer.price) === filter.price || filter.price === NOT_SET)) {
-      return false;
-    }
-    if (!(offer.rooms + '' === filter.rooms || filter.rooms === NOT_SET)) {
-      return false;
-    }
-    if (!(offer.guests + '' === filter.guests || filter.guests === NOT_SET)) {
-      return false;
-    }
-    for (var i = 0; i < filter.features.length; i++) {
-      var currentFeature = filter.features[i];
-      if (offer.features.indexOf(currentFeature) === -1) {
-        return false;
+  var matches = function (item, sample) {
+    return item === sample || sample === NOT_SET || sample === undefined;
+  };
+
+  var matchesFeatures = function (offer, sample) {
+    for (var prop in sample) {
+      if (sample.hasOwnProperty(prop) && sample[prop]) {
+        if (!offer.some(function (el) {
+          return el === prop;
+        })) {
+          return false;
+        }
       }
     }
     return true;
+  };
+
+  var matchesFilter = function (offer, filter) {
+    if (!matches(offer.type, filter.type)) {
+      return false;
+    }
+    if (!matches(getPriceRange(offer.price), filter.price)) {
+      return false;
+    }
+    if (!matches((offer.rooms).toString(), filter.rooms)) {
+      return false;
+    }
+    if (!matches((offer.guests).toString(), filter.guests)) {
+      return false;
+    }
+    return matchesFeatures(offer.features, filter.features);
   };
 
   window.data = {
