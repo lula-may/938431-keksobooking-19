@@ -11,8 +11,8 @@
   var MAP_BOTTOM = 630;
 
   var mapElement = document.querySelector('.map');
-  var mapPinMain = mapElement.querySelector('.map__pin--main');
-  var addressInput = document.querySelector('#address');
+  var mapPinMainElement = mapElement.querySelector('.map__pin--main');
+  var addressInputElement = document.querySelector('#address');
   var pinArea = {
     top: MAP_TOP - PIN_ACTIVE_HEIGHT,
     bottom: MAP_BOTTOM - PIN_ACTIVE_HEIGHT,
@@ -40,20 +40,20 @@
   };
 
   // Определяем исходные координаты метки
-  var initialPinCoord = new Coordinate(mapPinMain.offsetLeft, mapPinMain.offsetTop);
+  var initialPinCoord = new Coordinate(mapPinMainElement.offsetLeft, mapPinMainElement.offsetTop);
 
   var setAddressValue = function () {
-    addressInput.value = ((mapPinMain.offsetLeft + pinWidth / 2) + ', ' + (mapPinMain.offsetTop + pinHeight));
+    addressInputElement.value = ((mapPinMainElement.offsetLeft + pinWidth / 2) + ', ' + (mapPinMainElement.offsetTop + pinHeight));
   };
 
   var resetPin = function () {
     pinHeight = MAIN_PIN_SIZE;
-    mapPinMain.style.left = initialPinCoord.x + 'px';
-    mapPinMain.style.top = initialPinCoord.y + 'px';
+    mapPinMainElement.style.left = initialPinCoord.x + 'px';
+    mapPinMainElement.style.top = initialPinCoord.y + 'px';
     setAddressValue();
-    mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
-    mapPinMain.addEventListener('mousedown', mapPinMainDragHandler);
-    mapPinMain.addEventListener('keydown', mapPinMainPressEnterHandler);
+    mapPinMainElement.addEventListener('mousedown', mapPinMainMousedownHandler);
+    mapPinMainElement.addEventListener('mousedown', mapPinMainDragHandler);
+    mapPinMainElement.addEventListener('keydown', mapPinMainPressEnterHandler);
   };
 
   var activatePage = function () {
@@ -61,8 +61,8 @@
     window.form.activate();
     pinHeight = PIN_ACTIVE_HEIGHT;
     setAddressValue();
-    mapPinMain.removeEventListener('mousedown', mapPinMainMousedownHandler);
-    mapPinMain.removeEventListener('keydown', mapPinMainPressEnterHandler);
+    mapPinMainElement.removeEventListener('mousedown', mapPinMainMousedownHandler);
+    mapPinMainElement.removeEventListener('keydown', mapPinMainPressEnterHandler);
   };
 
   // Обработчики взаимодействия с меткой
@@ -81,27 +81,38 @@
   // Обработчик перетаскивания метки
   var mapPinMainDragHandler = function (evt) {
     evt.preventDefault();
-    var pinLocation = new Coordinate(mapPinMain.offsetLeft, mapPinMain.offsetTop, pinArea);
+    if (!pinLocation) {
+      var pinLocation = new Coordinate(mapPinMainElement.offsetLeft, mapPinMainElement.offsetTop, pinArea);
+      var startCoord = new Coordinate(evt.clientX, evt.clientY);
+      var calculatedCoord = new Coordinate(pinLocation.x, pinLocation.y);
+      var shift = new Coordinate(0, 0);
+    } else {
+      pinLocation.x = mapPinMainElement.offsetLeft;
+      pinLocation.y = mapPinMainElement.offsetTop;
+      startCoord.x = evt.clientX;
+      startCoord.y = evt.clientY;
+      calculatedCoord.x = pinLocation.x;
+      calculatedCoord.y = pinLocation.y;
+      shift.x = 0;
+      shift.y = 0;
+    }
     pinArea.right = mapElement.offsetWidth - pinWidth / 2;
-    var startCoords = new Coordinate(evt.clientX, evt.clientY);
-    var calculatedCoord = new Coordinate(pinLocation.x, pinLocation.y);
-    var shift = new Coordinate(0, 0);
 
     var setPinLocation = function (mouseShift) {
       calculatedCoord.x -= mouseShift.x;
       calculatedCoord.y -= mouseShift.y;
       pinLocation.setX(calculatedCoord.x);
       pinLocation.setY(calculatedCoord.y);
-      mapPinMain.style.left = pinLocation.x + 'px';
-      mapPinMain.style.top = pinLocation.y + 'px';
+      mapPinMainElement.style.left = pinLocation.x + 'px';
+      mapPinMainElement.style.top = pinLocation.y + 'px';
     };
 
     var mousemoveHandler = function (moveEvt) {
       moveEvt.preventDefault();
-      shift.x = startCoords.x - moveEvt.clientX;
-      shift.y = startCoords.y - moveEvt.clientY;
-      startCoords.x = moveEvt.clientX;
-      startCoords.y = moveEvt.clientY;
+      shift.x = startCoord.x - moveEvt.clientX;
+      shift.y = startCoord.y - moveEvt.clientY;
+      startCoord.x = moveEvt.clientX;
+      startCoord.y = moveEvt.clientY;
       setPinLocation(shift);
       setAddressValue();
     };
@@ -110,10 +121,6 @@
       upEvt.preventDefault();
       document.removeEventListener('mousemove', mousemoveHandler);
       document.removeEventListener('mouseup', mouseupHandler);
-      startCoords = null;
-      calculatedCoord = null;
-      shift = null;
-      pinLocation = null;
     };
 
     document.addEventListener('mousemove', mousemoveHandler);
@@ -121,9 +128,9 @@
   };
 
   // Вешаем обработчики воздействия на метку
-  mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
-  mapPinMain.addEventListener('mousedown', mapPinMainDragHandler);
-  mapPinMain.addEventListener('keydown', mapPinMainPressEnterHandler);
+  mapPinMainElement.addEventListener('mousedown', mapPinMainMousedownHandler);
+  mapPinMainElement.addEventListener('mousedown', mapPinMainDragHandler);
+  mapPinMainElement.addEventListener('keydown', mapPinMainPressEnterHandler);
   // Заполняем поле адреса
   setAddressValue();
 
