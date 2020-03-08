@@ -5,7 +5,7 @@
   var LEFT_MOUSE_BUTTON = 0;
 
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
-  var errorContainer = document.querySelector('main');
+  var errorContainerElement = document.querySelector('main');
   var errorElement;
 
   var buttonClickHandler = function (evt) {
@@ -38,7 +38,7 @@
     button.addEventListener('click', buttonClickHandler);
     document.addEventListener('keydown', escPressHandler);
     document.addEventListener('mousedown', documentClickHandler);
-    errorContainer.appendChild(errorElement);
+    errorContainerElement.appendChild(errorElement);
   };
 
   window.error = {

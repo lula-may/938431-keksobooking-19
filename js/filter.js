@@ -2,13 +2,13 @@
 
 (function () {
   var filterElement = document.querySelector('.map__filters');
-  var filterFields = filterElement.querySelectorAll('select, fieldset');
+  var filterFieldElements = filterElement.querySelectorAll('select, fieldset');
   var PREFIX = 'housing-';
   var filterState;
 
   var updateFilterState = function (control) {
     if (control.name === 'features') {
-      filterState.features[control.value] = (filterState.features[control.value]) ? false : true;
+      filterState.features[control.value] = !(filterState.features[control.value]);
       return;
     }
     filterState[(control.name).replace(PREFIX, '')] = control.value;
@@ -25,13 +25,13 @@
   };
 
   var activateFilter = function () {
-    filterFields.forEach(function (el) {
+    filterFieldElements.forEach(function (el) {
       el.removeAttribute('disabled');
     });
   };
 
   var disableFilter = function () {
-    filterFields.forEach(function (el) {
+    filterFieldElements.forEach(function (el) {
       el.setAttribute('disabled', '');
     });
     filterElement.reset();
