@@ -17,24 +17,24 @@
   };
 
   var showAnyPins = function () {
-    var currentData = advertisements.slice(0, MAX_SIMILAR_AMOUNT);
-    createPinFragment(currentData);
+    var anyAdvertisements = advertisements.slice(0, MAX_SIMILAR_AMOUNT);
+    createPinFragment(anyAdvertisements);
   };
 
 
   var updatePins = window.debounce(function (filter) {
     removePins();
-    var filteredData = [];
+    var filteredAdvertisements = [];
     for (var i = 0; i < advertisements.length; i++) {
       if (window.data.matches(advertisements[i].offer, filter)) {
-        filteredData.push(advertisements[i]);
-        if (filteredData.length === MAX_SIMILAR_AMOUNT) {
-          createPinFragment(filteredData);
+        filteredAdvertisements.push(advertisements[i]);
+        if (filteredAdvertisements.length === MAX_SIMILAR_AMOUNT) {
+          createPinFragment(filteredAdvertisements);
           return;
         }
       }
     }
-    createPinFragment(filteredData);
+    createPinFragment(filteredAdvertisements);
   });
 
   // Обработчики воздействия на метку объявления
@@ -56,9 +56,9 @@
       var advertisement = arr[i];
       var pinElement = template.cloneNode(true);
       pinElement.style = 'left: ' + (advertisement.location.x - PIN_GAP_X) + 'px; top: ' + (advertisement.location.y - PIN_GAP_Y) + 'px;';
-      var picture = pinElement.querySelector('img');
-      picture.src = advertisement.author.avatar;
-      picture.alt = advertisement.offer.title;
+      var imgElement = pinElement.querySelector('img');
+      imgElement.src = advertisement.author.avatar;
+      imgElement.alt = advertisement.offer.title;
       pinElement.card = window.card.create(advertisement);
       pinElement.addEventListener('click', mapPinClickHandler);
       pinElement.addEventListener('keydown', mapPinPressEnterHandler);

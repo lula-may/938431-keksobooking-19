@@ -26,10 +26,10 @@
     return item === sample || sample === NOT_SET || sample === undefined;
   };
 
-  var matchesFeatures = function (offer, sample) {
+  var matchesFeatures = function (offerFeatures, sample) {
     for (var prop in sample) {
       if (sample.hasOwnProperty(prop) && sample[prop]) {
-        if (!offer.some(function (el) {
+        if (!offerFeatures.some(function (el) {
           return el === prop;
         })) {
           return false;

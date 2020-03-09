@@ -3,51 +3,57 @@
 (function () {
   var TOO_MANY_ROOMS = '100';
   var NO_GUESTS = '0';
-  var adForm = document.querySelector('.ad-form');
-  var formFieldsets = adForm.querySelectorAll('fieldset');
-  var typeSelect = adForm.querySelector('#type');
-  var priceInput = adForm.querySelector('#price');
-  var roomSelect = adForm.querySelector('#room_number');
-  var capacitySelect = adForm.querySelector('#capacity');
-  var timeinSelect = adForm.querySelector('#timein');
-  var timeoutSelect = adForm.querySelector('#timeout');
-  var resetButton = adForm.querySelector('.ad-form__reset');
+  var MIN_PRICE = {
+    PALACE: '10000',
+    HOUSE: '5000',
+    FLAT: '1000',
+    BUNGALO: '0'
+  };
+  var adFormElement = document.querySelector('.ad-form');
+  var formFieldsetElements = adFormElement.querySelectorAll('fieldset');
+  var typeSelectElement = adFormElement.querySelector('#type');
+  var priceInputElement = adFormElement.querySelector('#price');
+  var roomSelectElement = adFormElement.querySelector('#room_number');
+  var capacitySelectElement = adFormElement.querySelector('#capacity');
+  var timeinSelectElement = adFormElement.querySelector('#timein');
+  var timeoutSelectElement = adFormElement.querySelector('#timeout');
+  var resetButton = adFormElement.querySelector('.ad-form__reset');
 
   // Связываем значение поля "Тип жилья" с полем "Цена"
   var setPriceValidity = function () {
-    var type = typeSelect.value;
+    var type = typeSelectElement.value;
     switch (type) {
       case 'palace':
-        priceInput.setAttribute('min', '10000');
-        priceInput.setAttribute('placeholder', '10000');
+        priceInputElement.setAttribute('min', MIN_PRICE.PALACE);
+        priceInputElement.setAttribute('placeholder', MIN_PRICE.PALACE);
         break;
       case 'flat':
-        priceInput.setAttribute('min', '1000');
-        priceInput.setAttribute('placeholder', '1000');
+        priceInputElement.setAttribute('min', MIN_PRICE.FLAT);
+        priceInputElement.setAttribute('placeholder', MIN_PRICE.FLAT);
         break;
       case 'house':
-        priceInput.setAttribute('min', '5000');
-        priceInput.setAttribute('placeholder', '5000');
+        priceInputElement.setAttribute('min', MIN_PRICE.HOUSE);
+        priceInputElement.setAttribute('placeholder', MIN_PRICE.HOUSE);
         break;
       default:
-        priceInput.setAttribute('min', '0');
-        priceInput.setAttribute('placeholder', '0');
+        priceInputElement.setAttribute('min', MIN_PRICE.BUNGALO);
+        priceInputElement.setAttribute('placeholder', MIN_PRICE.BUNGALO);
     }
   };
 
   // Связываем значение поля "Количество комнат" с "Количеством мест"
   var setGuestSelectValidity = function () {
-    var rooms = roomSelect.value;
-    var capacity = capacitySelect.value;
+    var rooms = roomSelectElement.value;
+    var capacity = capacitySelectElement.value;
 
     if (rooms === TOO_MANY_ROOMS && capacity !== NO_GUESTS) {
-      capacitySelect.setCustomValidity('Ваши комнаты - не для гостей. Выберите "Не для гостей".');
+      capacitySelectElement.setCustomValidity('Ваши комнаты - не для гостей. Выберите "Не для гостей".');
     } else if (rooms !== TOO_MANY_ROOMS && capacity > rooms) {
-      capacitySelect.setCustomValidity('Гостей не должно быть больше чем комнат. Выберите другое значение.');
+      capacitySelectElement.setCustomValidity('Гостей не должно быть больше чем комнат. Выберите другое значение.');
     } else if (rooms !== TOO_MANY_ROOMS && capacity === NO_GUESTS) {
-      capacitySelect.setCustomValidity('Выберите хотя бы одного гостя!');
+      capacitySelectElement.setCustomValidity('Выберите хотя бы одного гостя!');
     } else {
-      capacitySelect.setCustomValidity('');
+      capacitySelectElement.setCustomValidity('');
     }
   };
 
@@ -58,8 +64,8 @@
 
   // Действия при сбросе формы
   var doOnFormReset = function () {
-    adForm.reset();
-    adForm.classList.toggle('ad-form--invalid', false);
+    adFormElement.reset();
+    adFormElement.classList.toggle('ad-form--invalid', false);
     window.map.reset();
     window.imgLoader.disable();
     disableForm();
@@ -77,11 +83,11 @@
   };
 
   var timeinSelectChangeHandler = function () {
-    setSameValue(timeoutSelect, timeinSelect.value);
+    setSameValue(timeoutSelectElement, timeinSelectElement.value);
   };
 
   var timeoutSelectChangeHandler = function () {
-    setSameValue(timeinSelect, timeoutSelect.value);
+    setSameValue(timeinSelectElement, timeoutSelectElement.value);
   };
 
   var capacitySelectChangeHandler = function () {
@@ -100,9 +106,9 @@
 
   var adFormSubmitHandler = function (evt) {
     evt.preventDefault();
-    return (adForm.reportValidity())
-      ? window.backend.save(new FormData(adForm), doOnSuccessfulSending, window.error.show)
-      : adForm.classList.add('ad-form--invalid');
+    return (adFormElement.reportValidity())
+      ? window.backend.save(new FormData(adFormElement), doOnSuccessfulSending, window.error.show)
+      : adFormElement.classList.add('ad-form--invalid');
   };
 
   // Валидация формы
@@ -110,35 +116,35 @@
     // Проверка полей в начале
     setGuestSelectValidity();
     setPriceValidity();
-    typeSelect.addEventListener('change', typeChangeHandler);
-    timeinSelect.addEventListener('change', timeinSelectChangeHandler);
-    timeoutSelect.addEventListener('change', timeoutSelectChangeHandler);
-    capacitySelect.addEventListener('change', capacitySelectChangeHandler);
-    roomSelect.addEventListener('change', roomSelectChangeHandler);
+    typeSelectElement.addEventListener('change', typeChangeHandler);
+    timeinSelectElement.addEventListener('change', timeinSelectChangeHandler);
+    timeoutSelectElement.addEventListener('change', timeoutSelectChangeHandler);
+    capacitySelectElement.addEventListener('change', capacitySelectChangeHandler);
+    roomSelectElement.addEventListener('change', roomSelectChangeHandler);
   };
 
   var activateForm = function () {
-    adForm.classList.remove('ad-form--disabled');
-    formFieldsets.forEach(function (el) {
+    adFormElement.classList.remove('ad-form--disabled');
+    formFieldsetElements.forEach(function (el) {
       el.removeAttribute('disabled');
     });
     validateForm();
     resetButton.addEventListener('click', resetButtonClickHandler);
-    adForm.addEventListener('submit', adFormSubmitHandler);
+    adFormElement.addEventListener('submit', adFormSubmitHandler);
     window.imgLoader.activate();
   };
 
   var disableForm = function () {
-    adForm.classList.add('ad-form--disabled');
-    formFieldsets.forEach(function (el) {
+    adFormElement.classList.add('ad-form--disabled');
+    formFieldsetElements.forEach(function (el) {
       el.setAttribute('disabled', '');
     });
-    typeSelect.removeEventListener('change', typeChangeHandler);
-    timeinSelect.removeEventListener('change', timeinSelectChangeHandler);
-    timeoutSelect.removeEventListener('change', timeoutSelectChangeHandler);
-    capacitySelect.removeEventListener('change', capacitySelectChangeHandler);
-    roomSelect.removeEventListener('change', roomSelectChangeHandler);
-    adForm.removeEventListener('submit', adFormSubmitHandler);
+    typeSelectElement.removeEventListener('change', typeChangeHandler);
+    timeinSelectElement.removeEventListener('change', timeinSelectChangeHandler);
+    timeoutSelectElement.removeEventListener('change', timeoutSelectChangeHandler);
+    capacitySelectElement.removeEventListener('change', capacitySelectChangeHandler);
+    roomSelectElement.removeEventListener('change', roomSelectChangeHandler);
+    adFormElement.removeEventListener('submit', adFormSubmitHandler);
     resetButton.removeEventListener('click', resetButtonClickHandler);
   };
 

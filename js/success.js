@@ -5,7 +5,7 @@
   var LEFT_MOUSE_BUTTON = 0;
 
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
-  var successContainer = document.querySelector('main');
+  var successContainerElement = document.querySelector('main');
   var successElement;
 
   var escPressHandler = function (evt) {
@@ -30,7 +30,7 @@
     successElement = successTemplate.cloneNode(true);
     document.addEventListener('keydown', escPressHandler);
     document.addEventListener('mousedown', documentClickHandler);
-    successContainer.appendChild(successElement);
+    successContainerElement.appendChild(successElement);
   };
 
   window.success = {

@@ -2,7 +2,7 @@
 (function () {
   var ESC_KEY = 'Escape';
   var ENTER_KEY = 'Enter';
-  var housing = {
+  var typeToRussian = {
     palace: 'Дворец',
     flat: 'Квартира',
     house: 'Дом',
@@ -12,11 +12,7 @@
   var currentPin;
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var mapElement = document.querySelector('.map');
-  var filtersContainer = mapElement.querySelector('.map__filters-container');
-
-  var getTypeInRussian = function (type) {
-    return housing[type];
-  };
+  var filtersContainerElement = mapElement.querySelector('.map__filters-container');
 
   var getRoomsText = function (num) {
     if (num > 10 && num < 15 || num % 10 > 4 || num % 10 === 0) {
@@ -76,17 +72,18 @@
 
   var fillAdvertisementCard = function (advertisement) {
     var card = cardTemplate.cloneNode(true);
+    var featureListElement = card.querySelector('.popup__features');
+    var photoListElement = card.querySelector('.popup__photos');
+
     card.querySelector('.popup__title').textContent = advertisement.offer.title;
     card.querySelector('.popup__text--address').textContent = advertisement.offer.address;
     card.querySelector('.popup__text--price').textContent = advertisement.offer.price + '₽/ночь';
-    card.querySelector('.popup__type').textContent = getTypeInRussian(advertisement.offer.type);
+    card.querySelector('.popup__type').textContent = typeToRussian[advertisement.offer.type];
     card.querySelector('.popup__text--capacity').textContent = getRoomsText(advertisement.offer.rooms) + getGuestsText(advertisement.offer.guests);
     card.querySelector('.popup__text--time').textContent = 'Заезд после ' + advertisement.offer.checkin + ', выезд до ' + advertisement.offer.checkout;
-    var featureList = card.querySelector('.popup__features');
-    fillFeatureList(featureList, advertisement.offer.features);
+    fillFeatureList(featureListElement, advertisement.offer.features);
     card.querySelector('.popup__description').textContent = advertisement.offer.description;
-    var photoList = card.querySelector('.popup__photos');
-    fillPhotoList(photoList, advertisement.offer.photos);
+    fillPhotoList(photoListElement, advertisement.offer.photos);
     card.querySelector('.popup__avatar').src = advertisement.author.avatar;
 
     return card;
@@ -105,7 +102,7 @@
     closeButton.addEventListener('click', closeButtonClickHandler);
     closeButton.addEventListener('keydown', closeButtonPressEnterHandler);
     document.addEventListener('keydown', cardPressEscHandler);
-    mapElement.insertBefore(currentPin.card, filtersContainer);
+    mapElement.insertBefore(currentPin.card, filtersContainerElement);
   };
 
   var closeCard = function () {
