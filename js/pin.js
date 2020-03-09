@@ -80,9 +80,10 @@
 
   // Обработчик перетаскивания метки
   var mapPinMainDragHandler = function (evt) {
+    var pinLocation;
     evt.preventDefault();
     if (!pinLocation) {
-      var pinLocation = new Coordinate(mapPinMainElement.offsetLeft, mapPinMainElement.offsetTop, pinArea);
+      pinLocation = new Coordinate(mapPinMainElement.offsetLeft, mapPinMainElement.offsetTop, pinArea);
       var startCoord = new Coordinate(evt.clientX, evt.clientY);
       var calculatedCoord = new Coordinate(pinLocation.x, pinLocation.y);
       var shift = new Coordinate(0, 0);
