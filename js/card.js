@@ -2,6 +2,11 @@
 (function () {
   var ESC_KEY = 'Escape';
   var ENTER_KEY = 'Enter';
+  var DECIMAL_RADIX = 10;
+  var SINGULAR = 1;
+  var SINGULAR_USE_EXEPTION = 11;
+  var FIRST_NUMBER_TO_USE_WITH_GENITIVE = 5;
+  var LAST_OF_EXEPTION_TEN = 20;
   var typeToRussian = {
     palace: 'Дворец',
     flat: 'Квартира',
@@ -15,28 +20,26 @@
   var filtersContainerElement = mapElement.querySelector('.map__filters-container');
 
   var getRoomsText = function (num) {
-    if (num > 10 && num < 15 || num % 10 > 4 || num % 10 === 0) {
+    if (num >= FIRST_NUMBER_TO_USE_WITH_GENITIVE && num < LAST_OF_EXEPTION_TEN
+      || num % DECIMAL_RADIX >= FIRST_NUMBER_TO_USE_WITH_GENITIVE || num % DECIMAL_RADIX === 0) {
       return num + ' комнат для ';
     }
-    switch (num % 10) {
-      case 1: return num + ' комната для ';
-      default: return num + ' комнаты для ';
-    }
+    return (num % DECIMAL_RADIX === SINGULAR) ? num + ' комната для ' : num + ' комнаты для ';
   };
 
   var getGuestsText = function (num) {
-    return (num % 10 === 1 && num !== 11) ? num + ' гостя' : num + ' гостей';
+    return (num % DECIMAL_RADIX === SINGULAR && num !== SINGULAR_USE_EXEPTION) ? num + ' гостя' : num + ' гостей';
   };
 
   var fillFeatureList = function (list, availableFeatures) {
     // Создаем фрагмент из доступных удобств
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < availableFeatures.length; i++) {
-      var listElement = list.querySelector('.popup__feature--' + availableFeatures[i]);
+    availableFeatures.forEach(function (el) {
+      var listElement = list.querySelector('.popup__feature--' + el);
       var newItem = listElement.cloneNode(true);
-      newItem.textContent = availableFeatures[i];
+      newItem.textContent = el;
       fragment.appendChild(newItem);
-    }
+    });
     // Удаляем из разметки первоначальный список всех возможных удобств
     // Вставляем собранный фрагмент в разметку
     list.innerHTML = '';
