@@ -52,19 +52,18 @@
   var createPinFragment = function (arr) {
     var template = document.querySelector('#pin').content.querySelector('.map__pin');
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < arr.length; i++) {
-      var advertisement = arr[i];
+    arr.forEach(function (el) {
       var pinElement = template.cloneNode(true);
-      pinElement.style = 'left: ' + (advertisement.location.x - PIN_GAP_X) + 'px; top: ' + (advertisement.location.y - PIN_GAP_Y) + 'px;';
+      pinElement.style = 'left: ' + (el.location.x - PIN_GAP_X) + 'px; top: ' + (el.location.y - PIN_GAP_Y) + 'px;';
       var imgElement = pinElement.querySelector('img');
-      imgElement.src = advertisement.author.avatar;
-      imgElement.alt = advertisement.offer.title;
-      pinElement.card = window.card.create(advertisement);
+      imgElement.src = el.author.avatar;
+      imgElement.alt = el.offer.title;
+      pinElement.card = window.card.create(el);
       pinElement.addEventListener('click', mapPinClickHandler);
       pinElement.addEventListener('keydown', mapPinPressEnterHandler);
       fragment.appendChild(pinElement);
       pins.push(pinElement);
-    }
+    });
     window.map.showPins(fragment);
   };
 
