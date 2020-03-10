@@ -15,6 +15,7 @@
   var priceInputElement = adFormElement.querySelector('#price');
   var roomSelectElement = adFormElement.querySelector('#room_number');
   var capacitySelectElement = adFormElement.querySelector('#capacity');
+  var capacityOptionElements = capacitySelectElement.querySelectorAll('option');
   var timeinSelectElement = adFormElement.querySelector('#timein');
   var timeoutSelectElement = adFormElement.querySelector('#timeout');
   var resetButton = adFormElement.querySelector('.ad-form__reset');
@@ -57,6 +58,28 @@
     }
   };
 
+  var updateCapacityOptions = function (roomAmount) {
+    switch (roomAmount) {
+      case TOO_MANY_ROOMS:
+        [].forEach.call(capacityOptionElements, function (el) {
+          if (el.value === NO_GUESTS) {
+            el.removeAttribute('disabled');
+          } else {
+            el.setAttribute('disabled', '');
+          }
+        });
+        break;
+      default:
+        [].forEach.call(capacityOptionElements, function (el) {
+          if (el.value === NO_GUESTS || el.value > roomAmount) {
+            el.setAttribute('disabled', '');
+          } else {
+            el.removeAttribute('disabled');
+          }
+        });
+    }
+  };
+
   // Связываем время заезда и время выезда
   var setSameValue = function (select, value) {
     select.value = value;
@@ -96,6 +119,7 @@
 
   var roomSelectChangeHandler = function () {
     setGuestSelectValidity();
+    updateCapacityOptions(roomSelectElement.value);
   };
 
   var resetButtonClickHandler = function (evt) {
@@ -115,6 +139,7 @@
   var validateForm = function () {
     // Проверка полей в начале
     setGuestSelectValidity();
+    updateCapacityOptions(roomSelectElement.value);
     setPriceValidity();
     typeSelectElement.addEventListener('change', typeChangeHandler);
     timeinSelectElement.addEventListener('change', timeinSelectChangeHandler);
