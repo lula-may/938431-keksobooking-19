@@ -4,59 +4,87 @@
   var FILE_TYPES = ['gif', 'jpeg', 'jpg', 'png'];
   var avatarLoaderElement = document.querySelector('#avatar');
   var avatarContainerElement = document.querySelector('.ad-form-header__preview');
-  var housingPhotoLoaderElement = document.querySelector('#images');
-  var housingPhotoContainerElement = document.querySelector('.ad-form__photo');
+  var housingPhotoContainerElement = document.querySelector('.ad-form__photo-container');
+  var housingPhotoLoaderElement = housingPhotoContainerElement.querySelector('#images');
+  var housingPhotoDivElement = housingPhotoContainerElement.querySelector('.ad-form__photo');
   var avatarElement = avatarContainerElement.querySelector('img');
   var initialImg = avatarElement.src;
+  var userPhotos = [];
+  var noUserPhoto = true;
 
+  var avatarLoaderChangeHandler = function () {
+    var file = avatarLoaderElement.files[0];
+    var fileName = file.name.toLowerCase();
+    var matches = FILE_TYPES.some(function (it) {
+      return fileName.endsWith(it);
+    });
 
-  var setPictureLoader = function (pictureLoader, pictureContainer) {
-    var picture = pictureContainer.querySelector('img');
+    if (matches) {
+      var reader = new FileReader();
+      var readerLoadHandler = function () {
+        avatarElement.src = reader.result;
+        avatarContainerElement.classList.add('chosen');
+        avatarElement.classList.add('loaded');
+        reader.removeEventListener('load', readerLoadHandler);
+      };
+      reader.addEventListener('load', readerLoadHandler);
+      reader.readAsDataURL(file);
+    }
+  };
 
-    var pictureLoaderChangeHandler = function () {
-      var file = pictureLoader.files[0];
+  var createHousingPhotoList = function () {
+    var files = housingPhotoLoaderElement.files;
+    var fragment = document.createDocumentFragment();
+    [].forEach.call(files, function (file) {
       var fileName = file.name.toLowerCase();
       var matches = FILE_TYPES.some(function (it) {
         return fileName.endsWith(it);
       });
-
       if (matches) {
         var reader = new FileReader();
+        var photoContainer = housingPhotoDivElement.cloneNode(true);
+        var photo = document.createElement('img');
         var readerLoadHandler = function () {
-          picture.src = reader.result;
-          pictureContainer.classList.add('chosen');
-          picture.classList.add('loaded');
+          photo.src = reader.result;
+          photoContainer.classList.add('chosen');
+          photo.classList.add('loaded');
+          photoContainer.appendChild(photo);
           reader.removeEventListener('load', readerLoadHandler);
         };
         reader.addEventListener('load', readerLoadHandler);
         reader.readAsDataURL(file);
+        fragment.appendChild(photoContainer);
+        userPhotos.push(photoContainer);
       }
-    };
-
-    if (!picture) {
-      picture = document.createElement('img');
-      pictureContainer.appendChild(picture);
+    });
+    if (noUserPhoto) {
+      noUserPhoto = false;
+      housingPhotoDivElement.remove();
     }
+    housingPhotoContainerElement.appendChild(fragment);
+  };
 
-    pictureLoader.addEventListener('change', pictureLoaderChangeHandler);
-    pictureLoader.removeListener = function () {
-      this.removeEventListener('change', pictureLoaderChangeHandler);
-    };
+  var photoLoaderChangeHandler = function () {
+    createHousingPhotoList();
   };
 
   var activatePictureLoaders = function () {
-    setPictureLoader(avatarLoaderElement, avatarContainerElement);
-    setPictureLoader(housingPhotoLoaderElement, housingPhotoContainerElement);
+    avatarLoaderElement.addEventListener('change', avatarLoaderChangeHandler);
+    housingPhotoLoaderElement.addEventListener('change', photoLoaderChangeHandler);
   };
 
   var disable = function () {
-    housingPhotoContainerElement.innerHTML = '';
-    housingPhotoContainerElement.classList.remove('chosen');
+    userPhotos.forEach(function (el) {
+      el.remove();
+    });
+    userPhotos.length = 0;
+    noUserPhoto = true;
+    housingPhotoContainerElement.appendChild(housingPhotoDivElement);
     avatarContainerElement.classList.remove('chosen');
     avatarElement.classList.remove('loaded');
     avatarElement.src = initialImg;
-    housingPhotoLoaderElement.removeListener();
-    avatarLoaderElement.removeListener();
+    housingPhotoLoaderElement.removeEventListener('change', photoLoaderChangeHandler);
+    avatarLoaderElement.removeEventListener('change', avatarLoaderChangeHandler);
   };
 
 
