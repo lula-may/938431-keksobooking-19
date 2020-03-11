@@ -10,62 +10,68 @@
   var avatarElement = avatarContainerElement.querySelector('img');
   var initialImg = avatarElement.src;
   var userPhotos = [];
-  var noUserPhoto = true;
 
-  var avatarLoaderChangeHandler = function () {
-    var file = avatarLoaderElement.files[0];
+  var matches = function (file) {
     var fileName = file.name.toLowerCase();
-    var matches = FILE_TYPES.some(function (it) {
+    return FILE_TYPES.some(function (it) {
       return fileName.endsWith(it);
     });
+  };
 
-    if (matches) {
-      var reader = new FileReader();
-      var readerLoadHandler = function () {
-        avatarElement.src = reader.result;
-        avatarContainerElement.classList.add('chosen');
-        avatarElement.classList.add('loaded');
-        reader.removeEventListener('load', readerLoadHandler);
-      };
-      reader.addEventListener('load', readerLoadHandler);
-      reader.readAsDataURL(file);
+  var showAvatar = function (reader, container) {
+    avatarElement.src = reader.result;
+    container.classList.add('chosen');
+    avatarElement.classList.add('loaded');
+  };
+
+  var getNewPhoto = function (reader, container) {
+    var photo = document.createElement('img');
+    photo.src = reader.result;
+    container.classList.add('chosen');
+    photo.classList.add('loaded');
+    container.appendChild(photo);
+  };
+
+  var setUpFileReader = function (file, container, onSuccess) {
+    var reader = new FileReader();
+    var readerLoadHandler = function () {
+      onSuccess(reader, container);
+      reader.removeEventListener('load', readerLoadHandler);
+    };
+    reader.addEventListener('load', readerLoadHandler);
+    reader.readAsDataURL(file);
+  };
+
+  var getAvatar = function (file) {
+    if (matches(file)) {
+      setUpFileReader(file, avatarContainerElement, showAvatar);
     }
   };
 
-  var createHousingPhotoList = function () {
-    var files = housingPhotoLoaderElement.files;
+  var createHousingPhotoList = function (files) {
     var fragment = document.createDocumentFragment();
     [].forEach.call(files, function (file) {
-      var fileName = file.name.toLowerCase();
-      var matches = FILE_TYPES.some(function (it) {
-        return fileName.endsWith(it);
-      });
-      if (matches) {
-        var reader = new FileReader();
+      if (matches(file)) {
         var photoContainer = housingPhotoDivElement.cloneNode(true);
-        var photo = document.createElement('img');
-        var readerLoadHandler = function () {
-          photo.src = reader.result;
-          photoContainer.classList.add('chosen');
-          photo.classList.add('loaded');
-          photoContainer.appendChild(photo);
-          reader.removeEventListener('load', readerLoadHandler);
-        };
-        reader.addEventListener('load', readerLoadHandler);
-        reader.readAsDataURL(file);
+        setUpFileReader(file, photoContainer, getNewPhoto);
         fragment.appendChild(photoContainer);
         userPhotos.push(photoContainer);
       }
     });
-    if (noUserPhoto) {
-      noUserPhoto = false;
+    if (housingPhotoDivElement) {
       housingPhotoDivElement.remove();
     }
     housingPhotoContainerElement.appendChild(fragment);
   };
 
-  var photoLoaderChangeHandler = function () {
-    createHousingPhotoList();
+  var avatarLoaderChangeHandler = function (evt) {
+    var file = evt.target.files[0];
+    getAvatar(file, avatarContainerElement);
+  };
+
+  var photoLoaderChangeHandler = function (evt) {
+    var files = evt.target.files;
+    createHousingPhotoList(files);
   };
 
   var activatePictureLoaders = function () {
@@ -78,7 +84,6 @@
       el.remove();
     });
     userPhotos.length = 0;
-    noUserPhoto = true;
     housingPhotoContainerElement.appendChild(housingPhotoDivElement);
     avatarContainerElement.classList.remove('chosen');
     avatarElement.classList.remove('loaded');
@@ -86,7 +91,6 @@
     housingPhotoLoaderElement.removeEventListener('change', photoLoaderChangeHandler);
     avatarLoaderElement.removeEventListener('change', avatarLoaderChangeHandler);
   };
-
 
   window.imgLoader = {
     activate: activatePictureLoaders,
